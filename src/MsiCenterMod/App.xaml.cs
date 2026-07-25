@@ -22,6 +22,7 @@ public partial class App
     private ServiceProvider? _services;
     private TrayIconService? _trayIcon;
     private MainWindow? _mainWindow;
+    private AutoReapplyService? _autoReapply;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -61,16 +62,33 @@ public partial class App
 
         // 4) Cửa sổ chính + tray icon.
         _mainWindow = _services.GetRequiredService<MainWindow>();
+
+        // Dev: --tab=N mở thẳng tab thứ N (0-based); --tab-monitoring giữ tương thích cũ.
         if (e.Args.Contains("--tab-monitoring", StringComparer.OrdinalIgnoreCase))
         {
             _services.GetRequiredService<MainViewModel>().SelectedTabIndex = 1;
+        }
+        else if (e.Args.FirstOrDefault(a => a.StartsWith("--tab=", StringComparison.OrdinalIgnoreCase)) is { } tabArg
+                 && int.TryParse(tabArg["--tab=".Length..], out int tabIndex))
+        {
+            _services.GetRequiredService<MainViewModel>().SelectedTabIndex = tabIndex;
         }
         _trayIcon = new TrayIconService(
             _services.GetRequiredService<MainViewModel>(),
             () => _mainWindow,
             ExitApplication);
         MainWindow = _mainWindow;
-        _mainWindow.Show();
+
+        // --autostart (từ Task Scheduler): chạy ẩn dưới khay hệ thống.
+        bool startHidden = e.Args.Contains("--autostart", StringComparer.OrdinalIgnoreCase);
+        if (!startHidden)
+        {
+            _mainWindow.Show();
+        }
+
+        // Tự áp lại scenario cuối + lắng nghe resume/đổi nguồn AC-pin.
+        _autoReapply = _services.GetRequiredService<AutoReapplyService>();
+        _autoReapply.Start(applyNow: true);
     }
 
     private static ServiceProvider BuildServices(IElevationService elevation)
@@ -83,6 +101,12 @@ public partial class App
         services.AddSingleton<IPowerOverlayService, PowerOverlayService>();
         services.AddSingleton<IScenarioRepository, JsonScenarioRepository>();
         services.AddSingleton<ISystemMetricsService, SystemMetricsService>();
+        services.AddSingleton<ISettingsService, JsonSettingsService>();
+        services.AddSingleton<IStartupService, StartupTaskService>();
+        services.AddSingleton<IBatteryChargeService, BatteryChargeService>();
+        services.AddSingleton<IStorageInfoService, StorageInfoService>();
+        services.AddSingleton<IMemoryCleaner, MemoryCleanerService>();
+        services.AddSingleton<AutoReapplyService>();
 
         // Các aspect của scenario — thêm tính năng mới chỉ cần đăng ký thêm ở đây.
         services.AddSingleton<IScenarioAspect, PerformanceAspect>();
@@ -92,6 +116,7 @@ public partial class App
 
         // UI
         services.AddSingleton<MonitoringViewModel>();
+        services.AddSingleton<DiagnosisViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
 
@@ -135,6 +160,7 @@ public partial class App
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _autoReapply?.Dispose();
         _trayIcon?.Dispose();
         _services?.Dispose();
         _singleInstanceMutex?.Dispose();

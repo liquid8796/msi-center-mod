@@ -56,13 +56,14 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
         }
     }
 
-    public Task<SystemMetrics> ReadAsync(CancellationToken ct = default) => Task.Run(Read, ct);
+    public Task<SystemMetrics> ReadAsync(bool includeGpu = true, CancellationToken ct = default)
+        => Task.Run(() => Read(includeGpu), ct);
 
-    private SystemMetrics Read()
+    private SystemMetrics Read(bool includeGpu)
     {
         (int memoryPercent, _) = ReadMemoryStatus();
         (double ssdAvailableGb, int ssdUsedPercent) = ReadSystemDrive();
-        NvidiaGpuInfo? gpu = ReadNvidiaSmi();
+        NvidiaGpuInfo? gpu = includeGpu ? ReadNvidiaSmi() : null;
 
         return new SystemMetrics
         {

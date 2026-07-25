@@ -43,9 +43,7 @@
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="26,10" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
+        <Setter Property="Padding" Value="26,10" />        <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Root"
@@ -75,9 +73,7 @@
     <Style x:Key="Button.Ghost" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Padding" Value="14,7" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
+        <Setter Property="Padding" Value="14,7" />        <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Root"
@@ -104,9 +100,7 @@
 
     <!-- ========= Card chọn chế độ (RadioButton) ========= -->
     <Style x:Key="Radio.Card" TargetType="RadioButton">
-        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />        <Setter Property="Margin" Value="0,0,10,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
@@ -133,6 +127,90 @@
         </Setter>
     </Style>
 
+    <!-- ========= Radio dạng hàng (Battery Master) ========= -->
+    <Style x:Key="Radio.Row" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Root"
+                            Background="{StaticResource Brush.Card}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="14,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Brush.Border}"
+                                    BorderThickness="2"
+                                    CornerRadius="9">
+                                <Ellipse x:Name="Dot" Width="8" Height="8"
+                                         Fill="{StaticResource Brush.AccentRed}"
+                                         Visibility="Hidden" />
+                            </Border>
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                            <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= CheckBox tối ========= -->
+    <Style x:Key="Check.Dark" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <Border x:Name="Box" Width="16" Height="16" Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Background="{StaticResource Brush.Card}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1.5"
+                                CornerRadius="4">
+                            <Path x:Name="Tick" Data="M2,7 L6,11 12,3"
+                                  Stroke="White" StrokeThickness="2"
+                                  Visibility="Hidden" />
+                        </Border>
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{StaticResource Brush.AccentRed}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                            <Setter TargetName="Tick" Property="Visibility" Value="Visible" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ========= Danh sách scenario ========= -->
     <Style x:Key="List.Scenarios" TargetType="ListBox">
         <Setter Property="Background" Value="Transparent" />
@@ -142,7 +220,6 @@
             <Setter.Value>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Margin" Value="0,0,0,8" />
-                    <Setter Property="Cursor" Value="Hand" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
@@ -245,9 +322,7 @@
     <Style x:Key="Tab.MainItem" TargetType="TabItem">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
+        <Setter Property="FontWeight" Value="SemiBold" />        <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
                     <Border Background="Transparent" Padding="20,14,20,0">

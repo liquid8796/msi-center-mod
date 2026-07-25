@@ -8,5 +8,6 @@ public interface ISystemMetricsService
     /// <summary>Tên CPU đầy đủ (đọc một lần từ registry).</summary>
     string CpuName { get; }
 
-    Task<SystemMetrics> ReadAsync(CancellationToken ct = default);
+    /// <param name="includeGpu">false = bỏ qua nvidia-smi (tránh đánh thức dGPU khi không cần).</param>
+    Task<SystemMetrics> ReadAsync(bool includeGpu = true, CancellationToken ct = default);
 }

@@ -19,6 +19,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     private readonly IHardwareController _hardware;
     private readonly IScenarioRepository _repository;
+    private readonly ISettingsService _settings;
+    private readonly IStartupService _startup;
     private readonly DispatcherTimer _statusTimer;
     private bool _isApplying;
 
@@ -29,11 +31,55 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>ViewModel tab Hardware Monitoring (tab tự poll khi được mở).</summary>
     public MonitoringViewModel Monitoring { get; }
 
-    /// <summary>0 = User Scenario, 1 = Hardware Monitoring.</summary>
+    /// <summary>ViewModel tab System Diagnosis.</summary>
+    public DiagnosisViewModel Diagnosis { get; }
+
+    /// <summary>0 = User Scenario, 1 = Hardware Monitoring, 2 = System Diagnosis.</summary>
     [ObservableProperty]
     private int _selectedTabIndex;
 
-    partial void OnSelectedTabIndexChanged(int value) => Monitoring.SetActive(value == 1);
+    partial void OnSelectedTabIndexChanged(int value)
+    {
+        Monitoring.SetActive(value == 1);
+        Diagnosis.SetActive(value == 2);
+    }
+
+    // ---------- Cài đặt (sidebar) ----------
+
+    [ObservableProperty]
+    private bool _isAutoStartEnabled;
+
+    [ObservableProperty]
+    private bool _isAutoReapplyEnabled;
+
+    private bool _initializingSettings;
+
+    partial void OnIsAutoStartEnabledChanged(bool value)
+    {
+        if (_initializingSettings)
+        {
+            return;
+        }
+
+        if (!_startup.TrySetEnabled(value, out string error))
+        {
+            Services.System.AppLogger.Error($"Đổi autostart thất bại: {error}");
+            _initializingSettings = true;
+            IsAutoStartEnabled = !value; // hoàn tác trên UI
+            _initializingSettings = false;
+        }
+    }
+
+    partial void OnIsAutoReapplyEnabledChanged(bool value)
+    {
+        if (_initializingSettings)
+        {
+            return;
+        }
+
+        _settings.Current.AutoReapplyEnabled = value;
+        _settings.Save();
+    }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand), nameof(DeleteScenarioCommand), nameof(DuplicateScenarioCommand))]
@@ -66,11 +112,22 @@ public sealed partial class MainViewModel : ObservableObject
     public MainViewModel(
         IHardwareController hardware,
         IScenarioRepository repository,
-        MonitoringViewModel monitoring)
+        MonitoringViewModel monitoring,
+        DiagnosisViewModel diagnosis,
+        ISettingsService settings,
+        IStartupService startup)
     {
         _hardware = hardware;
         _repository = repository;
+        _settings = settings;
+        _startup = startup;
         Monitoring = monitoring;
+        Diagnosis = diagnosis;
+
+        _initializingSettings = true;
+        IsAutoStartEnabled = startup.IsEnabled();
+        IsAutoReapplyEnabled = settings.Current.AutoReapplyEnabled;
+        _initializingSettings = false;
 
         EcInfoText = string.IsNullOrEmpty(hardware.EcFirmwareInfo)
             ? "EC: không xác định"
@@ -179,6 +236,10 @@ public sealed partial class MainViewModel : ObservableObject
             {
                 IsApplySuccess = true;
                 ApplyBannerText = $"✔ Đã áp dụng \"{SelectedScenario.Name}\" lúc {DateTime.Now:HH:mm:ss}";
+
+                // Ghi nhớ để tự áp lại khi khởi động / resume / đổi nguồn.
+                _settings.Current.LastAppliedScenarioId = SelectedScenario.Profile.Id;
+                _settings.Save();
             }
             else
             {

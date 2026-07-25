@@ -94,9 +94,18 @@
                             Command="{Binding AddScenarioCommand}"
                             Content="＋  Thêm scenario mới" />
 
-                    <TextBlock Grid.Row="3" Margin="4,12,4,0" FontSize="11"
-                               Foreground="{StaticResource Brush.TextDim}"
-                               Text="{Binding VersionText}" />
+                    <StackPanel Grid.Row="3" Margin="4,14,4,0">
+                        <CheckBox Style="{StaticResource Check.Dark}" Margin="0,0,0,8"
+                                  IsChecked="{Binding IsAutoStartEnabled}"
+                                  Content="Khởi động cùng Windows"
+                                  ToolTip="Tạo task trong Task Scheduler (chạy ẩn dưới khay hệ thống, không hiện UAC)" />
+                        <CheckBox Style="{StaticResource Check.Dark}" Margin="0,0,0,10"
+                                  IsChecked="{Binding IsAutoReapplyEnabled}"
+                                  Content="Tự áp lại scenario cuối"
+                                  ToolTip="Tự áp lại scenario khi mở app, sau khi máy sleep/resume và khi cắm/rút sạc" />
+                        <TextBlock FontSize="11" Foreground="{StaticResource Brush.TextDim}"
+                                   Text="{Binding VersionText}" />
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -343,6 +352,10 @@
 
             <TabItem Header="📊  Hardware Monitoring">
                 <views:MonitoringView />
+            </TabItem>
+
+            <TabItem Header="🩺  System Diagnosis">
+                <views:DiagnosisView />
             </TabItem>
         </TabControl>
 
