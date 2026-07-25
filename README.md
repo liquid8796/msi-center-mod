@@ -20,7 +20,8 @@ Create as many scenarios as you like (Max Gaming, Quiet Work, Battery Saver, …
   - **SSD Status** — per-physical-disk usage donut, capacity breakdown, temperature and health (Windows Storage WMI)
 - **Start with Windows** — Task Scheduler task with highest run level (no UAC prompt at logon), starts hidden in the tray
 - **Auto-reapply last scenario** — on app start, after sleep/resume, and on AC ↔ battery switch (the EC resets to defaults on every boot; this keeps your scenario sticky without MSI Center)
-- Tray icon: apply any scenario from the context menu; closing the window minimizes to tray
+- **Bilingual UI** — Vietnamese / English, switchable at runtime with no restart (WPF DynamicResource dictionaries)
+- Tray icon: apply any scenario from the context menu (the last-applied one is check-marked); closing the window minimizes to tray
 
 ## How it works
 

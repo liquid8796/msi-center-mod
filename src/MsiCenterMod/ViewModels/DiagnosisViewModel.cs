@@ -38,6 +38,8 @@ public sealed partial class DiagnosisViewModel : ObservableObject
     private readonly DispatcherTimer _timer;
     private bool _isRefreshing;
     private bool _suppressBatteryWrite;
+    private int? _lastChargePercent;
+    private IReadOnlyList<PhysicalDiskInfo> _lastDisks = [];
 
     [ObservableProperty] private int _diskActivity;
     [ObservableProperty] private int _memoryUsage;
@@ -90,21 +92,25 @@ public sealed partial class DiagnosisViewModel : ObservableObject
         try
         {
             int? percent = await _battery.ReadChargeStopPercentAsync();
+            _lastChargePercent = percent;
             _suppressBatteryWrite = true;
             BatteryMode = percent is { } p
                 ? BatteryChargeModeExtensions.FromStopPercent(p)
                 : BatteryChargeMode.Unknown;
             _suppressBatteryWrite = false;
 
-            BatteryStatusText = percent is { } cur
-                ? $"Giới hạn sạc hiện tại: {cur}%"
-                : "Không đọc được trạng thái pin (cần quyền Administrator).";
+            RenderBatteryStatus();
         }
         catch (Exception ex)
         {
             AppLogger.Error("Đọc Battery Master thất bại", ex);
         }
     }
+
+    private void RenderBatteryStatus()
+        => BatteryStatusText = _lastChargePercent is { } cur
+            ? Loc.Format("S.Bat.Current", cur)
+            : Loc.Get("S.Bat.ReadFail");
 
     partial void OnBatteryModeChanged(BatteryChargeMode value)
     {
@@ -119,11 +125,14 @@ public sealed partial class DiagnosisViewModel : ObservableObject
     private async Task ApplyBatteryModeAsync(BatteryChargeMode mode)
     {
         bool ok = await _battery.SetModeAsync(mode);
-        BatteryStatusText = ok
-            ? $"✔ Đã đặt giới hạn sạc {mode.ToStopPercent()}%"
-            : "✖ Đặt giới hạn sạc thất bại (xem log).";
-        if (!ok)
+        if (ok)
         {
+            _lastChargePercent = mode.ToStopPercent();
+            BatteryStatusText = Loc.Format("S.Bat.SetOk", mode.ToStopPercent());
+        }
+        else
+        {
+            BatteryStatusText = Loc.Get("S.Bat.SetFail");
             await LoadBatteryModeAsync();
         }
     }
@@ -184,16 +193,16 @@ public sealed partial class DiagnosisViewModel : ObservableObject
     [RelayCommand]
     private async Task FreeMemoryAsync()
     {
-        FreeMemoryResult = "Đang giải phóng RAM…";
+        FreeMemoryResult = Loc.Get("S.Mem.Working");
         try
         {
             (int count, double freedMb) = await _memoryCleaner.TrimWorkingSetsAsync();
-            FreeMemoryResult = $"✔ Đã trim {count} tiến trình, giải phóng ~{freedMb:N0} MB";
+            FreeMemoryResult = Loc.Format("S.Mem.Done", count, freedMb);
         }
         catch (Exception ex)
         {
             AppLogger.Error("Giải phóng RAM thất bại", ex);
-            FreeMemoryResult = "✖ Giải phóng RAM thất bại.";
+            FreeMemoryResult = Loc.Get("S.Mem.Fail");
         }
     }
 
@@ -210,20 +219,8 @@ public sealed partial class DiagnosisViewModel : ObservableObject
         IsLoadingDisks = true;
         try
         {
-            IReadOnlyList<PhysicalDiskInfo> disks = await _storage.ReadDisksAsync();
-            Disks.Clear();
-            foreach (PhysicalDiskInfo disk in disks)
-            {
-                Disks.Add(new DiskCardViewModel(
-                    disk.Model,
-                    $"Tổng {disk.TotalGb:0} GB",
-                    $"Đã dùng {disk.UsedGb:0} GB",
-                    $"Trống {disk.FreeGb:0} GB",
-                    disk.UsedPercent,
-                    disk.TemperatureC is { } t ? $"{t} °C" : "— °C",
-                    disk.IsHealthy ? "Healthy" : "Cần chú ý",
-                    disk.IsHealthy));
-            }
+            _lastDisks = await _storage.ReadDisksAsync();
+            ProjectDisks();
         }
         catch (Exception ex)
         {
@@ -232,6 +229,34 @@ public sealed partial class DiagnosisViewModel : ObservableObject
         finally
         {
             IsLoadingDisks = false;
+        }
+    }
+
+    /// <summary>Dựng card ổ đĩa từ dữ liệu thô theo ngôn ngữ hiện tại.</summary>
+    private void ProjectDisks()
+    {
+        Disks.Clear();
+        foreach (PhysicalDiskInfo disk in _lastDisks)
+        {
+            Disks.Add(new DiskCardViewModel(
+                disk.Model,
+                Loc.Format("S.Disk.Total", disk.TotalGb),
+                Loc.Format("S.Disk.Used", disk.UsedGb),
+                Loc.Format("S.Disk.Free", disk.FreeGb),
+                disk.UsedPercent,
+                disk.TemperatureC is { } t ? $"{t} °C" : "— °C",
+                Loc.Get(disk.IsHealthy ? "S.Disk.Healthy" : "S.Disk.Warning"),
+                disk.IsHealthy));
+        }
+    }
+
+    /// <summary>Làm mới các chuỗi đã render sau khi đổi ngôn ngữ.</summary>
+    public void RefreshLocalization()
+    {
+        RenderBatteryStatus();
+        if (_lastDisks.Count > 0)
+        {
+            ProjectDisks();
         }
     }
 }

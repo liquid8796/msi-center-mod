@@ -177,21 +177,36 @@ public sealed partial class ScenarioViewModel : ObservableObject
         Edited?.Invoke(this, EventArgs.Empty);
     }
 
-    public static string PerformanceLabel(PerformanceLevel level) => level switch
+    /// <summary>Làm mới các chuỗi đã render sau khi đổi ngôn ngữ.</summary>
+    public void RefreshLocalization()
     {
-        PerformanceLevel.Turbo => "Turbo",
-        PerformanceLevel.High => "Cao",
-        PerformanceLevel.Balanced => "Cân bằng",
-        PerformanceLevel.Eco => "Tiết kiệm",
-        _ => level.ToString(),
-    };
+        OnPropertyChanged(nameof(Summary));
+        foreach (FanPointViewModel point in CpuPoints)
+        {
+            point.RefreshLabels();
+        }
 
-    public static string FanLabel(FanMode mode) => mode switch
+        foreach (FanPointViewModel point in GpuPoints)
+        {
+            point.RefreshLabels();
+        }
+    }
+
+    public static string PerformanceLabel(PerformanceLevel level) => Services.System.Loc.Get(level switch
     {
-        FanMode.Auto => "Quạt tự động",
-        FanMode.Silent => "Quạt im lặng",
-        FanMode.Advanced => "Quạt tùy chỉnh",
-        FanMode.CoolerBoost => "Cooler Boost",
-        _ => mode.ToString(),
-    };
+        PerformanceLevel.Turbo => "S.Label.Turbo",
+        PerformanceLevel.High => "S.Label.High",
+        PerformanceLevel.Balanced => "S.Label.Balanced",
+        PerformanceLevel.Eco => "S.Label.Eco",
+        _ => "S.Label.High",
+    });
+
+    public static string FanLabel(FanMode mode) => Services.System.Loc.Get(mode switch
+    {
+        FanMode.Auto => "S.Label.FanAuto",
+        FanMode.Silent => "S.Label.FanSilent",
+        FanMode.Advanced => "S.Label.FanAdvanced",
+        FanMode.CoolerBoost => "S.Label.FanBoost",
+        _ => "S.Label.FanAuto",
+    });
 }

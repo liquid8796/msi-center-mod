@@ -55,7 +55,7 @@
                         </TextBlock>
                         <TextBlock Margin="0,4,0,0" FontSize="12"
                                    Foreground="{StaticResource Brush.TextDim}"
-                                   Text="User Scenario không giới hạn" />
+                                   Text="{DynamicResource S.Tagline}" />
                         <Rectangle Height="3" Margin="0,10,0,0" HorizontalAlignment="Left" Width="120"
                                    Fill="{StaticResource Brush.Accent}" RadiusX="1.5" RadiusY="1.5" />
                     </StackPanel>
@@ -92,17 +92,32 @@
                     <Button Grid.Row="2" Margin="0,10,0,0"
                             Style="{StaticResource Button.Accent}"
                             Command="{Binding AddScenarioCommand}"
-                            Content="＋  Thêm scenario mới" />
+                            Content="{DynamicResource S.Sidebar.Add}" />
 
                     <StackPanel Grid.Row="3" Margin="4,14,4,0">
                         <CheckBox Style="{StaticResource Check.Dark}" Margin="0,0,0,8"
                                   IsChecked="{Binding IsAutoStartEnabled}"
-                                  Content="Khởi động cùng Windows"
-                                  ToolTip="Tạo task trong Task Scheduler (chạy ẩn dưới khay hệ thống, không hiện UAC)" />
+                                  Content="{DynamicResource S.Sidebar.AutoStart}"
+                                  ToolTip="{DynamicResource S.Sidebar.AutoStart.Tip}" />
                         <CheckBox Style="{StaticResource Check.Dark}" Margin="0,0,0,10"
                                   IsChecked="{Binding IsAutoReapplyEnabled}"
-                                  Content="Tự áp lại scenario cuối"
-                                  ToolTip="Tự áp lại scenario khi mở app, sau khi máy sleep/resume và khi cắm/rút sạc" />
+                                  Content="{DynamicResource S.Sidebar.AutoReapply}"
+                                  ToolTip="{DynamicResource S.Sidebar.AutoReapply.Tip}" />
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" FontSize="12"
+                                       Foreground="{StaticResource Brush.TextDim}"
+                                       Text="{DynamicResource S.Sidebar.Language}" />
+                            <ComboBox Grid.Column="1" Style="{StaticResource Combo.Dark}"
+                                      SelectedValuePath="Tag"
+                                      SelectedValue="{Binding SelectedLanguage}">
+                                <ComboBoxItem Tag="vi" Content="Tiếng Việt" />
+                                <ComboBoxItem Tag="en" Content="English" />
+                            </ComboBox>
+                        </Grid>
                         <TextBlock FontSize="11" Foreground="{StaticResource Brush.TextDim}"
                                    Text="{Binding VersionText}" />
                     </StackPanel>
@@ -127,7 +142,7 @@
                             BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,14"
                             Visibility="{Binding ShowAiCoolingWarning, Converter={StaticResource BoolToVis}}">
                         <TextBlock Foreground="{StaticResource Brush.Warning}" FontSize="12.5" TextWrapping="Wrap"
-                                   Text="⚠ MSI Center đang bật AI Cooling / Smart Auto — tính năng này sẽ tự ghi đè cấu hình quạt. Hãy tắt nó trong MSI Center (Features → User Scenario) để scenario của bạn không bị can thiệp." />
+                                   Text="{DynamicResource S.Warn.AiCooling}" />
                     </Border>
 
                     <ContentControl Content="{Binding SelectedScenario}">
@@ -167,74 +182,74 @@
 
                                         <Button Grid.Column="2" Margin="10,0,0,0" Style="{StaticResource Button.Ghost}"
                                                 Command="{Binding DataContext.DuplicateScenarioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                Content="⧉ Nhân bản" ToolTip="Tạo bản sao scenario này" />
+                                                Content="{DynamicResource S.Btn.Duplicate}" ToolTip="{DynamicResource S.Btn.Duplicate.Tip}" />
                                         <Button Grid.Column="3" Margin="8,0,0,0" Style="{StaticResource Button.Ghost}"
                                                 Command="{Binding DataContext.DeleteScenarioCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                Content="🗑 Xóa" />
+                                                Content="{DynamicResource S.Btn.Delete}" />
                                     </Grid>
 
                                     <!-- MỨC HIỆU NĂNG -->
-                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="MỨC HIỆU NĂNG" />
+                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="{DynamicResource S.Hdr.Perf}" />
                                     <UniformGrid Columns="4">
                                         <RadioButton GroupName="Perf" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding Performance, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:PerformanceLevel.Turbo}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="⚡" />
                                                 <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Turbo" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Hiệu năng tối đa" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Perf.Turbo.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Perf" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding Performance, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:PerformanceLevel.High}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="🚀" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Cao" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Chơi game nhẹ" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Perf.High}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Perf.High.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Perf" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding Performance, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:PerformanceLevel.Balanced}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="⚖️" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Cân bằng" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Dùng hằng ngày" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Perf.Balanced}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Perf.Balanced.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Perf" Style="{StaticResource Radio.Card}" Margin="0"
                                                      IsChecked="{Binding Performance, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:PerformanceLevel.Eco}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="🍃" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Tiết kiệm" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Kéo dài pin" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Perf.Eco}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Perf.Eco.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                     </UniformGrid>
 
                                     <!-- CHẾ ĐỘ QUẠT -->
-                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="CHẾ ĐỘ QUẠT" />
+                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="{DynamicResource S.Hdr.Fan}" />
                                     <UniformGrid Columns="4">
                                         <RadioButton GroupName="Fan" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding FanMode, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:FanMode.Auto}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="🌀" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Tự động" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="EC tự điều khiển" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Fan.Auto}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Fan.Auto.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Fan" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding FanMode, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:FanMode.Silent}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="🤫" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Im lặng" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Ưu tiên êm ái" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Fan.Silent}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Fan.Silent.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Fan" Style="{StaticResource Radio.Card}"
                                                      IsChecked="{Binding FanMode, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:FanMode.Advanced}}">
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="🎛️" />
-                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Tùy chỉnh" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Đường cong 6 điểm" />
+                                                <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{DynamicResource S.Fan.Advanced}" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Fan.Advanced.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton GroupName="Fan" Style="{StaticResource Radio.Card}" Margin="0"
@@ -242,7 +257,7 @@
                                             <StackPanel>
                                                 <TextBlock FontSize="20" HorizontalAlignment="Center" Text="❄️" />
                                                 <TextBlock FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,4,0,0" Text="Cooler Boost" />
-                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="Quạt tối đa" />
+                                                <TextBlock FontSize="10.5" HorizontalAlignment="Center" Foreground="{StaticResource Brush.TextDim}" Text="{DynamicResource S.Fan.Boost.Sub}" />
                                             </StackPanel>
                                         </RadioButton>
                                     </UniformGrid>
@@ -258,14 +273,14 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Style="{StaticResource Text.SectionHeader}" Margin="0"
                                                        VerticalAlignment="Center"
-                                                       Text="ĐƯỜNG CONG QUẠT (%) — 0–150, theo ngưỡng nhiệt của EC" />
+                                                       Text="{DynamicResource S.Curve.Header}" />
                                             <TextBlock Grid.Column="1" Margin="0,0,8,0" VerticalAlignment="Center"
                                                        FontSize="12" Foreground="{StaticResource Brush.TextDim}"
-                                                       Text="Đặt tất cả:" />
+                                                       Text="{DynamicResource S.Curve.SetAll}" />
                                             <TextBox Grid.Column="2" Style="{StaticResource TextBox.Mini}"
                                                      Width="52" VerticalAlignment="Center"
                                                      Text="{Binding AllSpeedInput, UpdateSourceTrigger=PropertyChanged}"
-                                                     ToolTip="Nhập 0–150 rồi Enter hoặc bấm Áp cho tất cả">
+                                                     ToolTip="{DynamicResource S.Curve.SetAll.Tip}">
                                                 <TextBox.InputBindings>
                                                     <KeyBinding Key="Return" Command="{Binding ApplyAllSpeedsCommand}" />
                                                 </TextBox.InputBindings>
@@ -274,7 +289,7 @@
                                                     Style="{StaticResource Button.Ghost}"
                                                     VerticalAlignment="Center"
                                                     Command="{Binding ApplyAllSpeedsCommand}"
-                                                    Content="Áp cho tất cả" />
+                                                    Content="{DynamicResource S.Curve.ApplyAll}" />
                                         </Grid>
                                         <UniformGrid Columns="2">
                                             <!-- CPU -->
@@ -282,7 +297,7 @@
                                                     BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,10,0">
                                                 <StackPanel>
                                                     <TextBlock FontSize="13" FontWeight="SemiBold"
-                                                               Foreground="{StaticResource Brush.Text}" Text="Quạt CPU" />
+                                                               Foreground="{StaticResource Brush.Text}" Text="{DynamicResource S.Curve.Cpu}" />
                                                     <ItemsControl ItemsSource="{Binding CpuPoints}" Margin="0,10,0,0">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
@@ -294,7 +309,7 @@
                                                                 <StackPanel HorizontalAlignment="Center">
                                                                     <TextBox Style="{StaticResource TextBox.Mini}" HorizontalAlignment="Center"
                                                                              Text="{Binding Speed, UpdateSourceTrigger=PropertyChanged}"
-                                                                             ToolTip="Nhập 0–150 (%)" />
+                                                                             ToolTip="{DynamicResource S.Curve.PointTip}" />
                                                                     <Slider Height="130" Margin="0,6" Style="{StaticResource Slider.Fan}"
                                                                             Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
                                                                     <TextBlock FontSize="10.5" HorizontalAlignment="Center"
@@ -310,7 +325,7 @@
                                                     BorderThickness="1" CornerRadius="10" Padding="14,10">
                                                 <StackPanel>
                                                     <TextBlock FontSize="13" FontWeight="SemiBold"
-                                                               Foreground="{StaticResource Brush.Text}" Text="Quạt GPU" />
+                                                               Foreground="{StaticResource Brush.Text}" Text="{DynamicResource S.Curve.Gpu}" />
                                                     <ItemsControl ItemsSource="{Binding GpuPoints}" Margin="0,10,0,0">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
@@ -322,7 +337,7 @@
                                                                 <StackPanel HorizontalAlignment="Center">
                                                                     <TextBox Style="{StaticResource TextBox.Mini}" HorizontalAlignment="Center"
                                                                              Text="{Binding Speed, UpdateSourceTrigger=PropertyChanged}"
-                                                                             ToolTip="Nhập 0–150 (%)" />
+                                                                             ToolTip="{DynamicResource S.Curve.PointTip}" />
                                                                     <Slider Height="130" Margin="0,6" Style="{StaticResource Slider.Fan}"
                                                                             Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
                                                                     <TextBlock FontSize="10.5" HorizontalAlignment="Center"
@@ -337,11 +352,11 @@
                                     </StackPanel>
 
                                     <!-- POWER MODE -->
-                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="POWER MODE WINDOWS (tùy chọn)" />
+                                    <TextBlock Style="{StaticResource Text.SectionHeader}" Text="{DynamicResource S.Hdr.Power}" />
                                     <ComboBox Width="280" HorizontalAlignment="Left" Style="{StaticResource Combo.Dark}"
                                               SelectedValuePath="Tag"
                                               SelectedValue="{Binding PowerOverlay}">
-                                        <ComboBoxItem Tag="{x:Static models:PowerOverlayMode.None}" Content="Không thay đổi" />
+                                        <ComboBoxItem Tag="{x:Static models:PowerOverlayMode.None}" Content="{DynamicResource S.Power.None}" />
                                         <ComboBoxItem Tag="{x:Static models:PowerOverlayMode.BestPerformance}" Content="Best Performance" />
                                         <ComboBoxItem Tag="{x:Static models:PowerOverlayMode.Balanced}" Content="Balanced" />
                                         <ComboBoxItem Tag="{x:Static models:PowerOverlayMode.BestEfficiency}" Content="Best Power Efficiency" />
@@ -356,7 +371,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,26,0,10">
                         <Button Style="{StaticResource Button.Accent}" MinWidth="220"
                                 Command="{Binding ApplyCommand}"
-                                Content="✔  ÁP DỤNG SCENARIO" />
+                                Content="{DynamicResource S.Btn.Apply}" />
                         <TextBlock Margin="16,0,0,0" VerticalAlignment="Center" FontSize="12.5"
                                    TextWrapping="Wrap" MaxWidth="440"
                                    Text="{Binding ApplyBannerText}">

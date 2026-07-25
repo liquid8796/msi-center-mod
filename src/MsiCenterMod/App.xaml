@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/DarkTheme.xaml" />
+                <ResourceDictionary Source="Themes/Strings.vi.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:EnumEqualsConverter x:Key="EnumEquals" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />

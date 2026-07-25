@@ -60,6 +60,12 @@ public partial class App
         // 3) DI container.
         _services = BuildServices(elevation);
 
+        // 3b) Ngôn ngữ UI: theo settings; --lang=xx để dev override không lưu.
+        string? langOverride = e.Args
+            .FirstOrDefault(a => a.StartsWith("--lang=", StringComparison.OrdinalIgnoreCase))
+            ?["--lang=".Length..];
+        Loc.Initialize(langOverride ?? _services.GetRequiredService<ISettingsService>().Current.Language);
+
         // 4) Cửa sổ chính + tray icon.
         _mainWindow = _services.GetRequiredService<MainWindow>();
 
@@ -75,6 +81,7 @@ public partial class App
         }
         _trayIcon = new TrayIconService(
             _services.GetRequiredService<MainViewModel>(),
+            _services.GetRequiredService<ISettingsService>(),
             () => _mainWindow,
             ExitApplication);
         MainWindow = _mainWindow;

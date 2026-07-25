@@ -13,9 +13,14 @@ public sealed partial class FanPointViewModel : ObservableObject
     /// <summary>Nhiệt độ ngưỡng của điểm (đọc từ EC, chỉ hiển thị).</summary>
     public int Temperature { get; }
 
-    public string TemperatureLabel => Temperature <= 0 ? "Nghỉ" : $"{Temperature}°C";
+    public string TemperatureLabel => Temperature <= 0
+        ? Services.System.Loc.Get("S.Label.Idle")
+        : $"{Temperature}°C";
 
     public string SpeedLabel => $"{Speed}%";
+
+    /// <summary>Làm mới nhãn sau khi đổi ngôn ngữ.</summary>
+    public void RefreshLabels() => OnPropertyChanged(nameof(TemperatureLabel));
 
     public FanPointViewModel(int temperature, int speed)
     {

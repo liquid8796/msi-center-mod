@@ -1,0 +1,97 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Sidebar -->
+    <sys:String x:Key="S.Tagline">User Scenario không giới hạn</sys:String>
+    <sys:String x:Key="S.Sidebar.Add">＋  Thêm scenario mới</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoStart">Khởi động cùng Windows</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoStart.Tip">Tạo task trong Task Scheduler (chạy ẩn dưới khay hệ thống, không hiện UAC)</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoReapply">Tự áp lại scenario cuối</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoReapply.Tip">Tự áp lại scenario khi mở app, sau khi máy sleep/resume và khi cắm/rút sạc</sys:String>
+    <sys:String x:Key="S.Sidebar.Language">Ngôn ngữ</sys:String>
+
+    <!-- Editor -->
+    <sys:String x:Key="S.Btn.Duplicate">⧉ Nhân bản</sys:String>
+    <sys:String x:Key="S.Btn.Duplicate.Tip">Tạo bản sao scenario này</sys:String>
+    <sys:String x:Key="S.Btn.Delete">🗑 Xóa</sys:String>
+    <sys:String x:Key="S.Hdr.Perf">MỨC HIỆU NĂNG</sys:String>
+    <sys:String x:Key="S.Hdr.Fan">CHẾ ĐỘ QUẠT</sys:String>
+    <sys:String x:Key="S.Hdr.Power">POWER MODE WINDOWS (tùy chọn)</sys:String>
+    <sys:String x:Key="S.Perf.Turbo.Sub">Hiệu năng tối đa</sys:String>
+    <sys:String x:Key="S.Perf.High">Cao</sys:String>
+    <sys:String x:Key="S.Perf.High.Sub">Chơi game nhẹ</sys:String>
+    <sys:String x:Key="S.Perf.Balanced">Cân bằng</sys:String>
+    <sys:String x:Key="S.Perf.Balanced.Sub">Dùng hằng ngày</sys:String>
+    <sys:String x:Key="S.Perf.Eco">Tiết kiệm</sys:String>
+    <sys:String x:Key="S.Perf.Eco.Sub">Kéo dài pin</sys:String>
+    <sys:String x:Key="S.Fan.Auto">Tự động</sys:String>
+    <sys:String x:Key="S.Fan.Auto.Sub">EC tự điều khiển</sys:String>
+    <sys:String x:Key="S.Fan.Silent">Im lặng</sys:String>
+    <sys:String x:Key="S.Fan.Silent.Sub">Ưu tiên êm ái</sys:String>
+    <sys:String x:Key="S.Fan.Advanced">Tùy chỉnh</sys:String>
+    <sys:String x:Key="S.Fan.Advanced.Sub">Đường cong 6 điểm</sys:String>
+    <sys:String x:Key="S.Fan.Boost.Sub">Quạt tối đa</sys:String>
+    <sys:String x:Key="S.Curve.Header">ĐƯỜNG CONG QUẠT (%) — 0–150, theo ngưỡng nhiệt của EC</sys:String>
+    <sys:String x:Key="S.Curve.SetAll">Đặt tất cả:</sys:String>
+    <sys:String x:Key="S.Curve.SetAll.Tip">Nhập 0–150 rồi Enter hoặc bấm Áp cho tất cả</sys:String>
+    <sys:String x:Key="S.Curve.ApplyAll">Áp cho tất cả</sys:String>
+    <sys:String x:Key="S.Curve.Cpu">Quạt CPU</sys:String>
+    <sys:String x:Key="S.Curve.Gpu">Quạt GPU</sys:String>
+    <sys:String x:Key="S.Curve.PointTip">Nhập 0–150 (%)</sys:String>
+    <sys:String x:Key="S.Power.None">Không thay đổi</sys:String>
+    <sys:String x:Key="S.Btn.Apply">✔  ÁP DỤNG SCENARIO</sys:String>
+
+    <!-- Cảnh báo -->
+    <sys:String x:Key="S.Warn.AiCooling">⚠ MSI Center đang bật AI Cooling / Smart Auto — tính năng này sẽ tự ghi đè cấu hình quạt. Hãy tắt nó trong MSI Center (Features → User Scenario) để scenario của bạn không bị can thiệp.</sys:String>
+    <sys:String x:Key="S.Hw.NoAdmin">Chưa có quyền Administrator — chỉ xem, không điều khiển được phần cứng.</sys:String>
+
+    <!-- Monitoring -->
+    <sys:String x:Key="S.Mon.CleanDisk">🧹 Dọn dẹp ổ đĩa</sys:String>
+    <sys:String x:Key="S.Mon.SsdAvailable">{0:0.00} GB khả dụng</sys:String>
+
+    <!-- System Diagnosis -->
+    <sys:String x:Key="S.Diag.BatteryHint">Nếu bạn chủ yếu cắm sạc, hãy đặt mức sạc thấp hơn (60% hoặc 80%) để kéo dài tuổi thọ pin.</sys:String>
+    <sys:String x:Key="S.Bat.Mobility.Sub">Luôn sạc đầy 100%</sys:String>
+    <sys:String x:Key="S.Bat.Balanced.Sub">Sạc khi dưới 70%, dừng ở 80%</sys:String>
+    <sys:String x:Key="S.Bat.Battery.Sub">Sạc khi dưới 50%, dừng ở 60%</sys:String>
+    <sys:String x:Key="S.Diag.CalibrationText">MSI khuyến nghị hiệu chuẩn pin 3 tháng/lần để pin bền nhất.</sys:String>
+    <sys:String x:Key="S.Diag.CalibrationRun">🔧 Chạy Battery Calibration</sys:String>
+    <sys:String x:Key="S.Diag.CleanDisk">🧹 Dọn dẹp ổ đĩa</sys:String>
+    <sys:String x:Key="S.Diag.FreeMem">🧠 Giải phóng RAM</sys:String>
+    <sys:String x:Key="S.Diag.RefreshTip">Làm mới</sys:String>
+
+    <!-- Chuỗi sinh từ code (ViewModel) -->
+    <sys:String x:Key="S.Label.Turbo">Turbo</sys:String>
+    <sys:String x:Key="S.Label.High">Cao</sys:String>
+    <sys:String x:Key="S.Label.Balanced">Cân bằng</sys:String>
+    <sys:String x:Key="S.Label.Eco">Tiết kiệm</sys:String>
+    <sys:String x:Key="S.Label.FanAuto">Quạt tự động</sys:String>
+    <sys:String x:Key="S.Label.FanSilent">Quạt im lặng</sys:String>
+    <sys:String x:Key="S.Label.FanAdvanced">Quạt tùy chỉnh</sys:String>
+    <sys:String x:Key="S.Label.FanBoost">Cooler Boost</sys:String>
+    <sys:String x:Key="S.Label.Idle">Nghỉ</sys:String>
+    <sys:String x:Key="S.Msg.Applying">Đang áp dụng "{0}"…</sys:String>
+    <sys:String x:Key="S.Msg.Applied">✔ Đã áp dụng "{0}" lúc {1}</sys:String>
+    <sys:String x:Key="S.Msg.DeleteConfirm">Xóa scenario "{0}"?</sys:String>
+    <sys:String x:Key="S.Msg.CopySuffix"> (bản sao)</sys:String>
+    <sys:String x:Key="S.Status.EcUnknown">EC: không xác định</sys:String>
+    <sys:String x:Key="S.Status.Mode">Chế độ: {0} / {1}</sys:String>
+    <sys:String x:Key="S.Status.ModeIdle">Chế độ: —</sys:String>
+    <sys:String x:Key="S.Tray.Header">Áp dụng scenario</sys:String>
+    <sys:String x:Key="S.Tray.Open">Mở MSI Center Mod</sys:String>
+    <sys:String x:Key="S.Tray.Exit">Thoát</sys:String>
+    <sys:String x:Key="S.Bat.Current">Giới hạn sạc hiện tại: {0}%</sys:String>
+    <sys:String x:Key="S.Bat.SetOk">✔ Đã đặt giới hạn sạc {0}%</sys:String>
+    <sys:String x:Key="S.Bat.SetFail">✖ Đặt giới hạn sạc thất bại (xem log).</sys:String>
+    <sys:String x:Key="S.Bat.ReadFail">Không đọc được trạng thái pin (cần quyền Administrator).</sys:String>
+    <sys:String x:Key="S.Mem.Working">Đang giải phóng RAM…</sys:String>
+    <sys:String x:Key="S.Mem.Done">✔ Đã trim {0} tiến trình, giải phóng ~{1:N0} MB</sys:String>
+    <sys:String x:Key="S.Mem.Fail">✖ Giải phóng RAM thất bại.</sys:String>
+    <sys:String x:Key="S.Disk.Total">Tổng {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Used">Đã dùng {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Free">Trống {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Healthy">Healthy</sys:String>
+    <sys:String x:Key="S.Disk.Warning">Cần chú ý</sys:String>
+
+</ResourceDictionary>

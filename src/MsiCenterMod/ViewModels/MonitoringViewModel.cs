@@ -107,7 +107,9 @@ public sealed partial class MonitoringViewModel : ObservableObject
             GpuClockText = metrics.GpuCoreClockMhz is { } core ? $"{core} MHz" : "—";
             VramClockText = metrics.GpuVramClockMhz is { } vram ? $"{vram} MHz" : "—";
             RamText = metrics.TotalRamGb > 0 ? $"{metrics.TotalRamGb:0} GB" : "—";
-            SsdAvailableText = metrics.SsdAvailableGb > 0 ? $"{metrics.SsdAvailableGb:0.00} GB khả dụng" : "—";
+            SsdAvailableText = metrics.SsdAvailableGb > 0
+                ? Loc.Format("S.Mon.SsdAvailable", metrics.SsdAvailableGb)
+                : "—";
             SsdUsedPercent = metrics.SsdUsedPercent;
             LanText = FormatBytesPerSec(metrics.LanBytesPerSec);
 

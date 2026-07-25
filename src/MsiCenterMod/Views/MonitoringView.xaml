@@ -96,7 +96,7 @@
                         <Button Style="{StaticResource Button.Ghost}" Margin="0,14,0,0"
                                 HorizontalAlignment="Left"
                                 Command="{Binding Monitoring.CleanDiskCommand}"
-                                Content="🧹 Dọn dẹp ổ đĩa" />
+                                Content="{DynamicResource S.Mon.CleanDisk}" />
                     </StackPanel>
 
                     <StackPanel>

@@ -17,6 +17,8 @@ public sealed class HardwareController : IHardwareController
 
     public string? UnavailableReason { get; }
 
+    public string? UnavailableReasonKey { get; }
+
     public string EcFirmwareInfo => _wmi.EcFirmwareInfo;
 
     public HardwareController(
@@ -31,11 +33,13 @@ public sealed class HardwareController : IHardwareController
         {
             IsOperational = false;
             UnavailableReason = "Chưa có quyền Administrator — chỉ xem, không điều khiển được phần cứng.";
+            UnavailableReasonKey = "S.Hw.NoAdmin";
             return;
         }
 
         IsOperational = _wmi.Initialize(out string error);
         UnavailableReason = IsOperational ? null : error;
+        UnavailableReasonKey = null; // lỗi WMI là chuỗi kỹ thuật động — hiển thị nguyên văn
     }
 
     public Task<HardwareStatus?> ReadStatusAsync(CancellationToken ct = default)

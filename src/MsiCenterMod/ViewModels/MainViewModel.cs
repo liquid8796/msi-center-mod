@@ -97,14 +97,47 @@ public sealed partial class MainViewModel : ObservableObject
     public bool ShowHardwareWarning => !_hardware.IsOperational;
 
     public string HardwareWarningText =>
-        _hardware.UnavailableReason ?? string.Empty;
+        _hardware.UnavailableReasonKey is { } key
+            ? Services.System.Loc.Get(key)
+            : _hardware.UnavailableReason ?? string.Empty;
 
     /// <summary>Cảnh báo khi MSI Center đang bật AI Cooling (sẽ ghi đè cấu hình quạt).</summary>
     public bool ShowAiCoolingWarning { get; }
 
-    public string EcInfoText { get; }
+    public string EcInfoText => string.IsNullOrEmpty(_hardware.EcFirmwareInfo)
+        ? Services.System.Loc.Get("S.Status.EcUnknown")
+        : $"EC: {_hardware.EcFirmwareInfo}";
 
     public string StorePathText { get; }
+
+    /// <summary>Ngôn ngữ UI: "vi" hoặc "en" — đổi là áp dụng ngay, lưu vào settings.</summary>
+    [ObservableProperty]
+    private string _selectedLanguage = Services.System.Loc.Vietnamese;
+
+    partial void OnSelectedLanguageChanged(string value)
+    {
+        if (_initializingSettings)
+        {
+            return;
+        }
+
+        Services.System.Loc.SetLanguage(value);
+        _settings.Current.Language = Services.System.Loc.CurrentLanguage;
+        _settings.Save();
+    }
+
+    /// <summary>Làm mới các chuỗi ViewModel đã render sau khi đổi ngôn ngữ.</summary>
+    private void OnLanguageChanged()
+    {
+        OnPropertyChanged(nameof(EcInfoText));
+        OnPropertyChanged(nameof(HardwareWarningText));
+        Status.RefreshLocalization();
+        Diagnosis.RefreshLocalization();
+        foreach (ScenarioViewModel scenario in Scenarios)
+        {
+            scenario.RefreshLocalization();
+        }
+    }
 
     public string VersionText { get; } =
         $"v{typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "1.0.0"}";
@@ -127,11 +160,11 @@ public sealed partial class MainViewModel : ObservableObject
         _initializingSettings = true;
         IsAutoStartEnabled = startup.IsEnabled();
         IsAutoReapplyEnabled = settings.Current.AutoReapplyEnabled;
+        SelectedLanguage = Services.System.Loc.CurrentLanguage;
         _initializingSettings = false;
 
-        EcInfoText = string.IsNullOrEmpty(hardware.EcFirmwareInfo)
-            ? "EC: không xác định"
-            : $"EC: {hardware.EcFirmwareInfo}";
+        Services.System.Loc.LanguageChanged += OnLanguageChanged;
+
         StorePathText = repository.StorePath;
         ShowAiCoolingWarning = hardware.IsOperational && ReadAiCoolingEnabled();
 
@@ -180,7 +213,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         ScenarioProfile copy = SelectedScenario.Profile.Clone();
-        copy.Name = $"{copy.Name} (bản sao)";
+        copy.Name = copy.Name + Services.System.Loc.Get("S.Msg.CopySuffix");
         var vm = new ScenarioViewModel(copy);
         AttachScenario(vm, insertAfter: SelectedScenario);
         SelectedScenario = vm;
@@ -196,7 +229,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         var result = global::System.Windows.MessageBox.Show(
-            $"Xóa scenario \"{SelectedScenario.Name}\"?",
+            Services.System.Loc.Format("S.Msg.DeleteConfirm", SelectedScenario.Name),
             "MSI Center Mod",
             global::System.Windows.MessageBoxButton.YesNo,
             global::System.Windows.MessageBoxImage.Question);
@@ -226,7 +259,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         _isApplying = true;
         ApplyCommand.NotifyCanExecuteChanged();
-        ApplyBannerText = $"Đang áp dụng \"{SelectedScenario.Name}\"…";
+        ApplyBannerText = Services.System.Loc.Format("S.Msg.Applying", SelectedScenario.Name);
         IsApplySuccess = false;
 
         try
@@ -235,7 +268,8 @@ public sealed partial class MainViewModel : ObservableObject
             if (result.Success)
             {
                 IsApplySuccess = true;
-                ApplyBannerText = $"✔ Đã áp dụng \"{SelectedScenario.Name}\" lúc {DateTime.Now:HH:mm:ss}";
+                ApplyBannerText = Services.System.Loc.Format(
+                    "S.Msg.Applied", SelectedScenario.Name, DateTime.Now.ToString("HH:mm:ss"));
 
                 // Ghi nhớ để tự áp lại khi khởi động / resume / đổi nguồn.
                 _settings.Current.LastAppliedScenarioId = SelectedScenario.Profile.Id;

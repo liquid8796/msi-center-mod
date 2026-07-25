@@ -1,0 +1,97 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Sidebar -->
+    <sys:String x:Key="S.Tagline">Unlimited User Scenarios</sys:String>
+    <sys:String x:Key="S.Sidebar.Add">＋  Add new scenario</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoStart">Start with Windows</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoStart.Tip">Creates a Task Scheduler task (starts hidden in the system tray, no UAC prompt)</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoReapply">Re-apply last scenario</sys:String>
+    <sys:String x:Key="S.Sidebar.AutoReapply.Tip">Re-applies the last scenario on app start, after sleep/resume and on AC/battery switch</sys:String>
+    <sys:String x:Key="S.Sidebar.Language">Language</sys:String>
+
+    <!-- Editor -->
+    <sys:String x:Key="S.Btn.Duplicate">⧉ Duplicate</sys:String>
+    <sys:String x:Key="S.Btn.Duplicate.Tip">Create a copy of this scenario</sys:String>
+    <sys:String x:Key="S.Btn.Delete">🗑 Delete</sys:String>
+    <sys:String x:Key="S.Hdr.Perf">PERFORMANCE LEVEL</sys:String>
+    <sys:String x:Key="S.Hdr.Fan">FAN MODE</sys:String>
+    <sys:String x:Key="S.Hdr.Power">WINDOWS POWER MODE (optional)</sys:String>
+    <sys:String x:Key="S.Perf.Turbo.Sub">Maximum performance</sys:String>
+    <sys:String x:Key="S.Perf.High">High</sys:String>
+    <sys:String x:Key="S.Perf.High.Sub">Light gaming</sys:String>
+    <sys:String x:Key="S.Perf.Balanced">Balanced</sys:String>
+    <sys:String x:Key="S.Perf.Balanced.Sub">Everyday use</sys:String>
+    <sys:String x:Key="S.Perf.Eco">Eco</sys:String>
+    <sys:String x:Key="S.Perf.Eco.Sub">Extend battery life</sys:String>
+    <sys:String x:Key="S.Fan.Auto">Auto</sys:String>
+    <sys:String x:Key="S.Fan.Auto.Sub">EC controlled</sys:String>
+    <sys:String x:Key="S.Fan.Silent">Silent</sys:String>
+    <sys:String x:Key="S.Fan.Silent.Sub">Quiet operation</sys:String>
+    <sys:String x:Key="S.Fan.Advanced">Advanced</sys:String>
+    <sys:String x:Key="S.Fan.Advanced.Sub">6-point fan curve</sys:String>
+    <sys:String x:Key="S.Fan.Boost.Sub">Maximum fan speed</sys:String>
+    <sys:String x:Key="S.Curve.Header">FAN CURVE (%) — 0–150, at EC temperature thresholds</sys:String>
+    <sys:String x:Key="S.Curve.SetAll">Set all:</sys:String>
+    <sys:String x:Key="S.Curve.SetAll.Tip">Enter 0–150 then press Enter or click Apply to all</sys:String>
+    <sys:String x:Key="S.Curve.ApplyAll">Apply to all</sys:String>
+    <sys:String x:Key="S.Curve.Cpu">CPU Fan</sys:String>
+    <sys:String x:Key="S.Curve.Gpu">GPU Fan</sys:String>
+    <sys:String x:Key="S.Curve.PointTip">Enter 0–150 (%)</sys:String>
+    <sys:String x:Key="S.Power.None">Don't change</sys:String>
+    <sys:String x:Key="S.Btn.Apply">✔  APPLY SCENARIO</sys:String>
+
+    <!-- Warnings -->
+    <sys:String x:Key="S.Warn.AiCooling">⚠ MSI Center's AI Cooling / Smart Auto is enabled — it will keep overriding your fan settings. Turn it off in MSI Center (Features → User Scenario) so your scenarios stay in control.</sys:String>
+    <sys:String x:Key="S.Hw.NoAdmin">No Administrator rights — read-only mode, hardware control is disabled.</sys:String>
+
+    <!-- Monitoring -->
+    <sys:String x:Key="S.Mon.CleanDisk">🧹 Clean Up Disk</sys:String>
+    <sys:String x:Key="S.Mon.SsdAvailable">{0:0.00} GB available</sys:String>
+
+    <!-- System Diagnosis -->
+    <sys:String x:Key="S.Diag.BatteryHint">If you mainly use your laptop plugged in, set a lower charge limit (60% or 80%) to prolong battery lifespan.</sys:String>
+    <sys:String x:Key="S.Bat.Mobility.Sub">Always charge to 100%</sys:String>
+    <sys:String x:Key="S.Bat.Balanced.Sub">Charge when under 70%, stop at 80%</sys:String>
+    <sys:String x:Key="S.Bat.Battery.Sub">Charge when under 50%, stop at 60%</sys:String>
+    <sys:String x:Key="S.Diag.CalibrationText">MSI recommends running Battery Calibration every 3 months for the best battery life.</sys:String>
+    <sys:String x:Key="S.Diag.CalibrationRun">🔧 Run Battery Calibration</sys:String>
+    <sys:String x:Key="S.Diag.CleanDisk">🧹 Clean Up Disk</sys:String>
+    <sys:String x:Key="S.Diag.FreeMem">🧠 Free Up Memory</sys:String>
+    <sys:String x:Key="S.Diag.RefreshTip">Refresh</sys:String>
+
+    <!-- Strings produced from code (ViewModels) -->
+    <sys:String x:Key="S.Label.Turbo">Turbo</sys:String>
+    <sys:String x:Key="S.Label.High">High</sys:String>
+    <sys:String x:Key="S.Label.Balanced">Balanced</sys:String>
+    <sys:String x:Key="S.Label.Eco">Eco</sys:String>
+    <sys:String x:Key="S.Label.FanAuto">Auto fan</sys:String>
+    <sys:String x:Key="S.Label.FanSilent">Silent fan</sys:String>
+    <sys:String x:Key="S.Label.FanAdvanced">Custom fan</sys:String>
+    <sys:String x:Key="S.Label.FanBoost">Cooler Boost</sys:String>
+    <sys:String x:Key="S.Label.Idle">Idle</sys:String>
+    <sys:String x:Key="S.Msg.Applying">Applying "{0}"…</sys:String>
+    <sys:String x:Key="S.Msg.Applied">✔ Applied "{0}" at {1}</sys:String>
+    <sys:String x:Key="S.Msg.DeleteConfirm">Delete scenario "{0}"?</sys:String>
+    <sys:String x:Key="S.Msg.CopySuffix"> (copy)</sys:String>
+    <sys:String x:Key="S.Status.EcUnknown">EC: unknown</sys:String>
+    <sys:String x:Key="S.Status.Mode">Mode: {0} / {1}</sys:String>
+    <sys:String x:Key="S.Status.ModeIdle">Mode: —</sys:String>
+    <sys:String x:Key="S.Tray.Header">Apply scenario</sys:String>
+    <sys:String x:Key="S.Tray.Open">Open MSI Center Mod</sys:String>
+    <sys:String x:Key="S.Tray.Exit">Exit</sys:String>
+    <sys:String x:Key="S.Bat.Current">Current charge limit: {0}%</sys:String>
+    <sys:String x:Key="S.Bat.SetOk">✔ Charge limit set to {0}%</sys:String>
+    <sys:String x:Key="S.Bat.SetFail">✖ Failed to set the charge limit (see log).</sys:String>
+    <sys:String x:Key="S.Bat.ReadFail">Cannot read battery state (Administrator rights required).</sys:String>
+    <sys:String x:Key="S.Mem.Working">Freeing memory…</sys:String>
+    <sys:String x:Key="S.Mem.Done">✔ Trimmed {0} processes, freed ~{1:N0} MB</sys:String>
+    <sys:String x:Key="S.Mem.Fail">✖ Failed to free memory.</sys:String>
+    <sys:String x:Key="S.Disk.Total">Total {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Used">Used {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Free">Free {0:0} GB</sys:String>
+    <sys:String x:Key="S.Disk.Healthy">Healthy</sys:String>
+    <sys:String x:Key="S.Disk.Warning">Needs attention</sys:String>
+
+</ResourceDictionary>

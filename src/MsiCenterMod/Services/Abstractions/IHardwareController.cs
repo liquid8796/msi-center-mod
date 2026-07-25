@@ -14,6 +14,9 @@ public interface IHardwareController
     /// <summary>Mô tả lý do không hoạt động (hiện lên UI khi <see cref="IsOperational"/> = false).</summary>
     string? UnavailableReason { get; }
 
+    /// <summary>Khóa localization của lý do (S.*) nếu có — UI ưu tiên khóa này để dịch được.</summary>
+    string? UnavailableReasonKey { get; }
+
     string EcFirmwareInfo { get; }
 
     Task<HardwareStatus?> ReadStatusAsync(CancellationToken ct = default);

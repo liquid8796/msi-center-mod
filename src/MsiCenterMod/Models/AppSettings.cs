@@ -7,4 +7,7 @@ public sealed class AppSettings
     public bool AutoReapplyEnabled { get; set; } = true;
 
     public Guid? LastAppliedScenarioId { get; set; }
+
+    /// <summary>Ngôn ngữ UI: "vi" hoặc "en".</summary>
+    public string Language { get; set; } = "vi";
 }

@@ -35,14 +35,14 @@
                     <StackPanel>
                         <TextBlock FontSize="12" Foreground="{StaticResource Brush.TextDim}" TextWrapping="Wrap"
                                    Margin="0,0,0,14"
-                                   Text="Nếu bạn chủ yếu cắm sạc, hãy đặt mức sạc thấp hơn (60% hoặc 80%) để kéo dài tuổi thọ pin." />
+                                   Text="{DynamicResource S.Diag.BatteryHint}" />
 
                         <RadioButton GroupName="Battery" Style="{StaticResource Radio.Row}"
                                      IsChecked="{Binding Diagnosis.BatteryMode, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static models:BatteryChargeMode.BestForMobility}}">
                             <StackPanel>
                                 <TextBlock FontSize="13" FontWeight="SemiBold" Text="⚡ Best for Mobility" />
                                 <TextBlock FontSize="11.5" Foreground="{StaticResource Brush.TextDim}"
-                                           Text="Luôn sạc đầy 100%" />
+                                           Text="{DynamicResource S.Bat.Mobility.Sub}" />
                             </StackPanel>
                         </RadioButton>
 
@@ -51,7 +51,7 @@
                             <StackPanel>
                                 <TextBlock FontSize="13" FontWeight="SemiBold" Text="⚖️ Balanced" />
                                 <TextBlock FontSize="11.5" Foreground="{StaticResource Brush.TextDim}"
-                                           Text="Sạc khi dưới 70%, dừng ở 80%" />
+                                           Text="{DynamicResource S.Bat.Balanced.Sub}" />
                             </StackPanel>
                         </RadioButton>
 
@@ -60,7 +60,7 @@
                             <StackPanel>
                                 <TextBlock FontSize="13" FontWeight="SemiBold" Text="🔋 Best for Battery" />
                                 <TextBlock FontSize="11.5" Foreground="{StaticResource Brush.TextDim}"
-                                           Text="Sạc khi dưới 50%, dừng ở 60%" />
+                                           Text="{DynamicResource S.Bat.Battery.Sub}" />
                             </StackPanel>
                         </RadioButton>
 
@@ -74,9 +74,9 @@
                                    Text="Battery Calibration" />
                         <TextBlock FontSize="11.5" Foreground="{StaticResource Brush.TextDim}" TextWrapping="Wrap"
                                    Margin="0,4,0,10"
-                                   Text="MSI khuyến nghị hiệu chuẩn pin 3 tháng/lần để pin bền nhất." />
+                                   Text="{DynamicResource S.Diag.CalibrationText}" />
                         <Button Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left"
-                                Content="🔧 Chạy Battery Calibration"
+                                Content="{DynamicResource S.Diag.CalibrationRun}"
                                 Command="{Binding Diagnosis.RunBatteryCalibrationCommand}"
                                 Visibility="{Binding Diagnosis.IsBatteryCalibrationAvailable, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
@@ -114,10 +114,10 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <Button Style="{StaticResource Button.Ghost}" MinWidth="150" Margin="0,0,0,10"
-                                    Content="🧹 Clean Up Disk"
+                                    Content="{DynamicResource S.Diag.CleanDisk}"
                                     Command="{Binding Diagnosis.CleanDiskCommand}" />
                             <Button Style="{StaticResource Button.Ghost}" MinWidth="150"
-                                    Content="🧠 Free Up Memory"
+                                    Content="{DynamicResource S.Diag.FreeMem}"
                                     Command="{Binding Diagnosis.FreeMemoryCommand}" />
                         </StackPanel>
                     </Grid>
@@ -126,7 +126,7 @@
                 <Grid Margin="0,22,0,12">
                     <TextBlock Style="{StaticResource SectionTitle}" Margin="0" Text="SSD Status" />
                     <Button Style="{StaticResource Button.Ghost}" HorizontalAlignment="Right" Padding="10,4"
-                            Content="🔄" ToolTip="Làm mới"
+                            Content="🔄" ToolTip="{DynamicResource S.Diag.RefreshTip}"
                             Command="{Binding Diagnosis.RefreshDisksCommand}" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Diagnosis.Disks}">
