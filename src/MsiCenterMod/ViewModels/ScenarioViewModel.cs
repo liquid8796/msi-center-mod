@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MsiCenterMod.Models;
 
 namespace MsiCenterMod.ViewModels;
@@ -44,6 +45,41 @@ public sealed partial class ScenarioViewModel : ObservableObject
 
     public bool IsAdvancedFan => FanMode == FanMode.Advanced;
 
+    /// <summary>Giá trị nhập ở ô "đặt tất cả" (chuỗi để cho phép gõ dở).</summary>
+    [ObservableProperty]
+    private string _allSpeedInput = string.Empty;
+
+    /// <summary>Đang đặt hàng loạt — chặn 12 sự kiện Edited lẻ tẻ, chỉ lưu một lần.</summary>
+    private bool _isBulkUpdating;
+
+    /// <summary>Đặt cùng một tốc độ cho cả 12 điểm quạt CPU + GPU.</summary>
+    [RelayCommand]
+    private void ApplyAllSpeeds()
+    {
+        if (!int.TryParse(AllSpeedInput?.Trim(), out int value))
+        {
+            return;
+        }
+
+        value = FanCurve.Clamp(value);
+        AllSpeedInput = value.ToString();
+
+        _isBulkUpdating = true;
+        foreach (FanPointViewModel point in CpuPoints)
+        {
+            point.Speed = value;
+        }
+
+        foreach (FanPointViewModel point in GpuPoints)
+        {
+            point.Speed = value;
+        }
+
+        _isBulkUpdating = false;
+        SyncCurvesToProfile();
+        Edited?.Invoke(this, EventArgs.Empty);
+    }
+
     /// <summary>Dòng mô tả ngắn trên card scenario, ví dụ "Turbo · Quạt tùy chỉnh".</summary>
     public string Summary => $"{PerformanceLabel(Performance)} · {FanLabel(FanMode)}";
 
@@ -87,7 +123,19 @@ public sealed partial class ScenarioViewModel : ObservableObject
 
     private void OnFanPointChanged(object? sender, global::System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(FanPointViewModel.Speed))
+        if (e.PropertyName != nameof(FanPointViewModel.Speed) || _isBulkUpdating)
+        {
+            return;
+        }
+
+        SyncCurvesToProfile();
+        Edited?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Chép tốc độ từ các điểm UI về profile (chỉ khi cả 2 danh sách đã dựng đủ).</summary>
+    private void SyncCurvesToProfile()
+    {
+        if (CpuPoints.Count < FanCurve.PointCount || GpuPoints.Count < FanCurve.PointCount)
         {
             return;
         }
@@ -97,8 +145,6 @@ public sealed partial class ScenarioViewModel : ObservableObject
             Profile.CpuFanCurve[i] = CpuPoints[i].Speed;
             Profile.GpuFanCurve[i] = GpuPoints[i].Speed;
         }
-
-        Edited?.Invoke(this, EventArgs.Empty);
     }
 
     partial void OnNameChanged(string value)

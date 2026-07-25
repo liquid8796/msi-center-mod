@@ -249,7 +249,33 @@
 
                                     <!-- ĐƯỜNG CONG QUẠT -->
                                     <StackPanel Visibility="{Binding IsAdvancedFan, Converter={StaticResource BoolToVis}}">
-                                        <TextBlock Style="{StaticResource Text.SectionHeader}" Text="ĐƯỜNG CONG QUẠT (%) — 0–150, theo ngưỡng nhiệt của EC" />
+                                        <Grid Margin="0,22,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{StaticResource Text.SectionHeader}" Margin="0"
+                                                       VerticalAlignment="Center"
+                                                       Text="ĐƯỜNG CONG QUẠT (%) — 0–150, theo ngưỡng nhiệt của EC" />
+                                            <TextBlock Grid.Column="1" Margin="0,0,8,0" VerticalAlignment="Center"
+                                                       FontSize="12" Foreground="{StaticResource Brush.TextDim}"
+                                                       Text="Đặt tất cả:" />
+                                            <TextBox Grid.Column="2" Style="{StaticResource TextBox.Mini}"
+                                                     Width="52" VerticalAlignment="Center"
+                                                     Text="{Binding AllSpeedInput, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Nhập 0–150 rồi Enter hoặc bấm Áp cho tất cả">
+                                                <TextBox.InputBindings>
+                                                    <KeyBinding Key="Return" Command="{Binding ApplyAllSpeedsCommand}" />
+                                                </TextBox.InputBindings>
+                                            </TextBox>
+                                            <Button Grid.Column="3" Margin="8,0,0,0" Padding="10,5"
+                                                    Style="{StaticResource Button.Ghost}"
+                                                    VerticalAlignment="Center"
+                                                    Command="{Binding ApplyAllSpeedsCommand}"
+                                                    Content="Áp cho tất cả" />
+                                        </Grid>
                                         <UniformGrid Columns="2">
                                             <!-- CPU -->
                                             <Border Background="{StaticResource Brush.Card}" BorderBrush="{StaticResource Brush.Border}"
@@ -266,8 +292,9 @@
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate DataType="{x:Type vm:FanPointViewModel}">
                                                                 <StackPanel HorizontalAlignment="Center">
-                                                                    <TextBlock FontSize="11.5" FontWeight="SemiBold" HorizontalAlignment="Center"
-                                                                               Foreground="{StaticResource Brush.Text}" Text="{Binding SpeedLabel}" />
+                                                                    <TextBox Style="{StaticResource TextBox.Mini}" HorizontalAlignment="Center"
+                                                                             Text="{Binding Speed, UpdateSourceTrigger=PropertyChanged}"
+                                                                             ToolTip="Nhập 0–150 (%)" />
                                                                     <Slider Height="130" Margin="0,6" Style="{StaticResource Slider.Fan}"
                                                                             Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
                                                                     <TextBlock FontSize="10.5" HorizontalAlignment="Center"
@@ -293,8 +320,9 @@
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate DataType="{x:Type vm:FanPointViewModel}">
                                                                 <StackPanel HorizontalAlignment="Center">
-                                                                    <TextBlock FontSize="11.5" FontWeight="SemiBold" HorizontalAlignment="Center"
-                                                                               Foreground="{StaticResource Brush.Text}" Text="{Binding SpeedLabel}" />
+                                                                    <TextBox Style="{StaticResource TextBox.Mini}" HorizontalAlignment="Center"
+                                                                             Text="{Binding Speed, UpdateSourceTrigger=PropertyChanged}"
+                                                                             ToolTip="Nhập 0–150 (%)" />
                                                                     <Slider Height="130" Margin="0,6" Style="{StaticResource Slider.Fan}"
                                                                             Value="{Binding Speed, UpdateSourceTrigger=PropertyChanged}" />
                                                                     <TextBlock FontSize="10.5" HorizontalAlignment="Center"
