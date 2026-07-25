@@ -43,6 +43,8 @@ public sealed partial class MonitoringViewModel : ObservableObject
     [ObservableProperty] private string _fan1Text = "—";
     [ObservableProperty] private string _fan2Text = "—";
     [ObservableProperty] private string _lanText = "—";
+    [ObservableProperty] private string _wifiText = "—";
+    [ObservableProperty] private string _powerPlanText = "—";
 
     public MonitoringViewModel(ISystemMetricsService metrics, IHardwareController hardware)
     {
@@ -112,6 +114,8 @@ public sealed partial class MonitoringViewModel : ObservableObject
                 : "—";
             SsdUsedPercent = metrics.SsdUsedPercent;
             LanText = FormatBytesPerSec(metrics.LanBytesPerSec);
+            WifiText = FormatBytesPerSec(metrics.WifiBytesPerSec);
+            PowerPlanText = string.IsNullOrWhiteSpace(metrics.PowerPlanName) ? "—" : metrics.PowerPlanName;
 
             // Nhiệt độ: ưu tiên cảm biến GPU của nvidia-smi, fallback EC; CPU lấy từ EC.
             int? gpuTemp = metrics.GpuTemperatureC ?? (ec?.GpuTemperature > 0 ? ec.GpuTemperature : null);

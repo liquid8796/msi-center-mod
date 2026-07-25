@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using MsiCenterMod.Models;
@@ -11,19 +12,22 @@ namespace MsiCenterMod.Services.System;
 /// <summary>
 /// Đọc chỉ số hệ thống bằng API chuẩn của Windows:
 ///  - CPU/đĩa/mạng: PerformanceCounter (giá trị giống Task Manager).
-///  - RAM: GlobalMemoryStatusEx.
+///  - RAM: GlobalMemoryStatusEx; power plan: Powrprof.
 ///  - GPU rời: nvidia-smi (usage/clock/temp) — chỉ được gọi khi tab Monitoring
 ///    đang mở, tránh giữ dGPU thức gây tốn pin trên laptop Optimus.
 /// Mọi nguồn đọc đều độc lập: nguồn nào lỗi thì trả giá trị mặc định, không phá snapshot.
 /// </summary>
 public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
 {
+    private readonly Lock _networkSync = new();
     private readonly PerformanceCounter? _cpuCounter;
     private readonly PerformanceCounter? _diskCounter;
-    private readonly List<PerformanceCounter> _networkCounters = [];
+    private readonly List<PerformanceCounter> _lanCounters = [];
+    private readonly List<PerformanceCounter> _wifiCounters = [];
     private readonly string? _nvidiaSmiPath;
     private readonly string? _fallbackGpuName;
     private readonly double _totalRamGb;
+    private volatile bool _networkCountersDirty = true;
 
     public string CpuName { get; }
 
@@ -39,21 +43,9 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
                       ?? TryCreateCounter("Processor", "% Processor Time", "_Total");
         _diskCounter = TryCreateCounter("PhysicalDisk", "% Disk Time", "_Total");
 
-        try
-        {
-            foreach (string instance in new PerformanceCounterCategory("Network Interface").GetInstanceNames())
-            {
-                PerformanceCounter? counter = TryCreateCounter("Network Interface", "Bytes Total/sec", instance);
-                if (counter is not null)
-                {
-                    _networkCounters.Add(counter);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            AppLogger.Error("Không liệt kê được network counter", ex);
-        }
+        // Adapter có thể bật/tắt lúc chạy (Wi-Fi, USB tethering, VPN) → dựng lại danh sách counter.
+        NetworkChange.NetworkAddressChanged += OnNetworkChanged;
+        NetworkChange.NetworkAvailabilityChanged += OnNetworkChanged;
     }
 
     public Task<SystemMetrics> ReadAsync(bool includeGpu = true, CancellationToken ct = default)
@@ -64,6 +56,7 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
         (int memoryPercent, _) = ReadMemoryStatus();
         (double ssdAvailableGb, int ssdUsedPercent) = ReadSystemDrive();
         NvidiaGpuInfo? gpu = includeGpu ? ReadNvidiaSmi() : null;
+        (double lanBytes, double wifiBytes) = SampleNetwork();
 
         return new SystemMetrics
         {
@@ -73,7 +66,9 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
             TotalRamGb = _totalRamGb,
             SsdAvailableGb = ssdAvailableGb,
             SsdUsedPercent = ssdUsedPercent,
-            LanBytesPerSec = _networkCounters.Sum(c => SampleCounterRaw(c)),
+            LanBytesPerSec = lanBytes,
+            WifiBytesPerSec = wifiBytes,
+            PowerPlanName = ReadPowerPlanName(),
             GpuName = gpu?.Name ?? _fallbackGpuName,
             GpuUsagePercent = gpu?.UsagePercent,
             GpuCoreClockMhz = gpu?.CoreClockMhz,
@@ -81,6 +76,149 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
             GpuTemperatureC = gpu?.TemperatureC,
         };
     }
+
+    // ---------- Mạng: tách LAN / Wi-Fi ----------
+
+    private void OnNetworkChanged(object? sender, EventArgs e) => _networkCountersDirty = true;
+
+    private (double Lan, double Wifi) SampleNetwork()
+    {
+        lock (_networkSync)
+        {
+            if (_networkCountersDirty)
+            {
+                RebuildNetworkCounters();
+                _networkCountersDirty = false;
+            }
+
+            return (_lanCounters.Sum(SampleCounterRaw), _wifiCounters.Sum(SampleCounterRaw));
+        }
+    }
+
+    /// <summary>
+    /// Dựng lại counter theo loại adapter: instance name của "Network Interface"
+    /// chính là Description của adapter sau khi thay các ký tự PerfMon không nhận.
+    /// </summary>
+    private void RebuildNetworkCounters()
+    {
+        foreach (PerformanceCounter counter in _lanCounters.Concat(_wifiCounters))
+        {
+            counter.Dispose();
+        }
+
+        _lanCounters.Clear();
+        _wifiCounters.Clear();
+
+        try
+        {
+            var wifiNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var lanNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (nic.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel)
+                {
+                    continue;
+                }
+
+                string key = SanitizeCounterInstanceName(nic.Description);
+                if (nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                {
+                    wifiNames.Add(key);
+                }
+                else
+                {
+                    lanNames.Add(key);
+                }
+            }
+
+            foreach (string instance in new PerformanceCounterCategory("Network Interface").GetInstanceNames())
+            {
+                bool isWifi = wifiNames.Contains(instance);
+                if (!isWifi && !lanNames.Contains(instance))
+                {
+                    continue; // adapter ảo/không xác định — bỏ qua để số liệu sạch
+                }
+
+                PerformanceCounter? counter = TryCreateCounter("Network Interface", "Bytes Total/sec", instance);
+                if (counter is not null)
+                {
+                    (isWifi ? _wifiCounters : _lanCounters).Add(counter);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error("Không dựng được network counter", ex);
+        }
+    }
+
+    /// <summary>PerfMon thay các ký tự đặc biệt trong tên instance: ( ) # / \ .</summary>
+    private static string SanitizeCounterInstanceName(string description) => description
+        .Replace('(', '[')
+        .Replace(')', ']')
+        .Replace('#', '_')
+        .Replace('/', '_')
+        .Replace('\\', '_');
+
+    // ---------- Power plan ----------
+
+    private static string? ReadPowerPlanName()
+    {
+        nint activeGuidPtr = 0;
+        try
+        {
+            if (PowerGetActiveScheme(0, out activeGuidPtr) != 0 || activeGuidPtr == 0)
+            {
+                return null;
+            }
+
+            Guid scheme = Marshal.PtrToStructure<Guid>(activeGuidPtr);
+
+            uint size = 0;
+            uint sizeResult = PowerReadFriendlyName(0, ref scheme, 0, 0, 0, ref size);
+            if ((sizeResult != 0 && sizeResult != ErrorMoreData) || size == 0)
+            {
+                return null;
+            }
+
+            nint buffer = Marshal.AllocHGlobal((int)size);
+            try
+            {
+                return PowerReadFriendlyName(0, ref scheme, 0, 0, buffer, ref size) == 0
+                    ? Marshal.PtrToStringUni(buffer)
+                    : null;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error("Đọc power plan thất bại", ex);
+            return null;
+        }
+        finally
+        {
+            if (activeGuidPtr != 0)
+            {
+                LocalFree(activeGuidPtr);
+            }
+        }
+    }
+
+    private const uint ErrorMoreData = 234;
+
+    [DllImport("powrprof.dll")]
+    private static extern uint PowerGetActiveScheme(nint userRootPowerKey, out nint activePolicyGuid);
+
+    [DllImport("powrprof.dll", CharSet = CharSet.Unicode)]
+    private static extern uint PowerReadFriendlyName(
+        nint rootPowerKey, ref Guid schemeGuid, nint subGroupGuid, nint powerSettingGuid,
+        nint buffer, ref uint bufferSize);
+
+    [DllImport("kernel32.dll")]
+    private static extern nint LocalFree(nint hMem);
 
     // ---------- Performance counters ----------
 
@@ -283,13 +421,21 @@ public sealed class SystemMetricsService : ISystemMetricsService, IDisposable
 
     public void Dispose()
     {
+        NetworkChange.NetworkAddressChanged -= OnNetworkChanged;
+        NetworkChange.NetworkAvailabilityChanged -= OnNetworkChanged;
+
         _cpuCounter?.Dispose();
         _diskCounter?.Dispose();
-        foreach (PerformanceCounter counter in _networkCounters)
-        {
-            counter.Dispose();
-        }
 
-        _networkCounters.Clear();
+        lock (_networkSync)
+        {
+            foreach (PerformanceCounter counter in _lanCounters.Concat(_wifiCounters))
+            {
+                counter.Dispose();
+            }
+
+            _lanCounters.Clear();
+            _wifiCounters.Clear();
+        }
     }
 }

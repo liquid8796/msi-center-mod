@@ -173,7 +173,9 @@ public sealed partial class MainViewModel : ObservableObject
             AttachScenario(new ScenarioViewModel(profile));
         }
 
-        SelectedScenario = Scenarios.FirstOrDefault();
+        // Chọn đúng scenario đang áp (khớp dấu tick ở tray menu), không mặc định về cái đầu.
+        SelectedScenario = Scenarios.FirstOrDefault(
+            s => s.Profile.Id == settings.Current.LastAppliedScenarioId) ?? Scenarios.FirstOrDefault();
 
         _statusTimer = new DispatcherTimer
         {

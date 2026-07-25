@@ -13,7 +13,7 @@ Create as many scenarios as you like (Max Gaming, Quiet Work, Battery Saver, …
   - Performance level: Turbo / High / Balanced / Eco (EC shift mode)
   - Fan: Auto / Silent / Advanced 6-point CPU & GPU curves / Cooler Boost
   - Optional Windows power mode overlay per scenario
-- **Hardware Monitoring** tab — MSI Center-style dashboard: CPU/GPU usage donuts, disk & memory, GPU name/clock/VRAM/temperature (nvidia-smi), CPU temperature and both fan RPMs (EC), RAM, SSD, LAN. Polls only while the tab is open so the dGPU is not kept awake.
+- **Hardware Monitoring** tab — MSI Center-style dashboard: CPU/GPU usage donuts, disk & memory, GPU name/clock/VRAM/temperature (nvidia-smi), CPU temperature and both fan RPMs (EC), RAM, SSD, LAN and Wi-Fi throughput, and the active Windows power plan. Polls only while the tab is open so the dGPU is not kept awake.
 - **System Diagnosis** tab:
   - **Battery Master** — charge limit modes (100% / 80% / 60%) via EC register `0xD7`, plus a Battery Calibration launcher when MSI's tool is installed
   - **System Checker** — disk/memory load with Clean Up Disk (cleanmgr) and Free Up Memory (working-set trim)

@@ -27,6 +27,12 @@ public sealed record SystemMetrics
 
     public int SsdUsedPercent { get; init; }
 
-    /// <summary>Tổng băng thông mạng hiện tại (byte/giây, mọi adapter).</summary>
+    /// <summary>Băng thông các adapter có dây (byte/giây).</summary>
     public double LanBytesPerSec { get; init; }
+
+    /// <summary>Băng thông các adapter Wi-Fi (byte/giây).</summary>
+    public double WifiBytesPerSec { get; init; }
+
+    /// <summary>Tên power plan Windows đang dùng (ví dụ "Ultimate Performance").</summary>
+    public string? PowerPlanName { get; init; }
 }

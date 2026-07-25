@@ -118,7 +118,7 @@
                 <!-- GPU -->
                 <Border Style="{StaticResource InfoCard}">
                     <StackPanel>
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -128,7 +128,7 @@
                                        Text="{Binding Monitoring.GpuName}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -138,7 +138,7 @@
                                        Text="{Binding Monitoring.GpuClockText}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -148,7 +148,7 @@
                                        Text="{Binding Monitoring.VramClockText}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -163,7 +163,7 @@
                 <!-- CPU -->
                 <Border Style="{StaticResource InfoCard}" Margin="0,14,0,0">
                     <StackPanel>
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -173,7 +173,7 @@
                                        Text="{Binding Monitoring.CpuName}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -188,7 +188,7 @@
                 <!-- Hệ thống -->
                 <Border Style="{StaticResource InfoCard}" Margin="0,14,0,0">
                     <StackPanel>
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -198,7 +198,7 @@
                                        Text="{Binding Monitoring.RamText}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -216,7 +216,7 @@
                                        Text="{Binding Monitoring.SsdUsedPercent, StringFormat={}{0} %}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -226,7 +226,7 @@
                                        Text="{Binding Monitoring.Fan1Text}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -236,7 +236,7 @@
                                        Text="{Binding Monitoring.Fan2Text}" />
                         </Grid>
                         <Border Style="{StaticResource RowSep}" />
-                        <Grid Height="46">
+                        <Grid Height="42">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -244,6 +244,26 @@
                             <TextBlock Style="{StaticResource RowLabel}" Text="LAN" />
                             <TextBlock Grid.Column="1" Style="{StaticResource RowValue}"
                                        Text="{Binding Monitoring.LanText}" />
+                        </Grid>
+                        <Border Style="{StaticResource RowSep}" />
+                        <Grid Height="42">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{StaticResource RowLabel}" Text="Wi-Fi" />
+                            <TextBlock Grid.Column="1" Style="{StaticResource RowValue}"
+                                       Text="{Binding Monitoring.WifiText}" />
+                        </Grid>
+                        <Border Style="{StaticResource RowSep}" />
+                        <Grid Height="42">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{StaticResource RowLabel}" Text="Power Plan" />
+                            <TextBlock Grid.Column="1" Style="{StaticResource RowValue}" Margin="12,0,0,0"
+                                       Text="{Binding Monitoring.PowerPlanText}" />
                         </Grid>
                     </StackPanel>
                 </Border>
