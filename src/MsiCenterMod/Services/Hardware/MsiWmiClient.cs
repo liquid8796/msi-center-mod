@@ -84,24 +84,39 @@ public sealed class MsiWmiClient : IMsiWmiClient
 
     /// <summary>
     /// Tạo template tham số vào — giống hệt CreateParamsInstance của MSI Center:
-    /// ưu tiên GetMethodParameters("Set_Data"), fallback sang kết quả Get_WMI.
+    /// thử GetMethodParameters("Set_Data") trước; nếu thất bại HOẶC thuộc tính Data
+    /// bên trong rỗng (xảy ra trên nhiều máy — chính vì vậy MSI Center mới có fallback)
+    /// thì dùng luôn kết quả trả về của Get_WMI, vốn luôn chứa object Data thật.
     /// </summary>
     private void CreateInParamsTemplate()
     {
         try
         {
-            _inParamsTemplate = _instance!.GetMethodParameters(MsiEcRegisters.SetData);
+            ManagementBaseObject? fromDefinition = _instance!.GetMethodParameters(MsiEcRegisters.SetData);
+            if (fromDefinition?["Data"] is ManagementBaseObject)
+            {
+                _inParamsTemplate = fromDefinition;
+                return;
+            }
+
+            fromDefinition?.Dispose();
+            AppLogger.Info("GetMethodParameters(Set_Data) có Data rỗng — fallback sang Get_WMI.");
         }
         catch (Exception ex)
         {
-            AppLogger.Error("GetMethodParameters(Set_Data) thất bại, fallback Get_WMI", ex);
-            _inParamsTemplate = _instance!.InvokeMethod(MsiEcRegisters.GetWmi, null, null);
+            AppLogger.Error("GetMethodParameters(Set_Data) thất bại — fallback sang Get_WMI", ex);
         }
 
-        if (_inParamsTemplate?["Data"] is not ManagementBaseObject)
+        ManagementBaseObject? fromGetWmi = _instance!.InvokeMethod(MsiEcRegisters.GetWmi, null, null);
+        if (fromGetWmi?["Data"] is ManagementBaseObject)
         {
-            throw new InvalidOperationException("Không tạo được bộ tham số WMI (thiếu thuộc tính Data).");
+            _inParamsTemplate = fromGetWmi;
+            return;
         }
+
+        fromGetWmi?.Dispose();
+        throw new InvalidOperationException(
+            "Không tạo được bộ tham số WMI (cả Set_Data lẫn Get_WMI đều không có thuộc tính Data).");
     }
 
     public bool TryRead(string method, byte subIndex, out byte[] data)
