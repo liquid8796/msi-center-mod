@@ -241,6 +241,88 @@
         </Setter>
     </Style>
 
+    <!-- ========= Tab chính (kiểu MSI Center: chữ + gạch gradient dưới) ========= -->
+    <Style x:Key="Tab.MainItem" TargetType="TabItem">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border Background="Transparent" Padding="20,14,20,0">
+                        <StackPanel>
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" />
+                            <Rectangle x:Name="Underline" Height="3" Margin="0,10,0,0"
+                                       RadiusX="1.5" RadiusY="1.5"
+                                       Fill="{StaticResource Brush.Accent}"
+                                       Visibility="Hidden" />
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                            <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Tab.Main" TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource Tab.MainItem}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource Brush.Sidebar}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="0,0,0,1">
+                            <TabPanel IsItemsHost="True" Margin="10,0,0,0" />
+                        </Border>
+                        <ContentPresenter Grid.Row="1" ContentSource="SelectedContent" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= ProgressBar mảnh ========= -->
+    <Style x:Key="Bar.Thin" TargetType="ProgressBar">
+        <Setter Property="Height" Value="6" />
+        <Setter Property="Minimum" Value="0" />
+        <Setter Property="Maximum" Value="100" />
+        <Setter Property="Background" Value="{StaticResource Brush.Border}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid>
+                        <Border x:Name="PART_Track"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="3" />
+                        <Border x:Name="PART_Indicator"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="3"
+                                HorizontalAlignment="Left" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ========= TextBox ========= -->
     <Style x:Key="TextBox.Dark" TargetType="TextBox">
         <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />

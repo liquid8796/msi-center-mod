@@ -26,6 +26,15 @@ public sealed partial class MainViewModel : ObservableObject
 
     public StatusViewModel Status { get; } = new();
 
+    /// <summary>ViewModel tab Hardware Monitoring (tab tự poll khi được mở).</summary>
+    public MonitoringViewModel Monitoring { get; }
+
+    /// <summary>0 = User Scenario, 1 = Hardware Monitoring.</summary>
+    [ObservableProperty]
+    private int _selectedTabIndex;
+
+    partial void OnSelectedTabIndexChanged(int value) => Monitoring.SetActive(value == 1);
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand), nameof(DeleteScenarioCommand), nameof(DuplicateScenarioCommand))]
     private ScenarioViewModel? _selectedScenario;
@@ -54,10 +63,14 @@ public sealed partial class MainViewModel : ObservableObject
     public string VersionText { get; } =
         $"v{typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "1.0.0"}";
 
-    public MainViewModel(IHardwareController hardware, IScenarioRepository repository)
+    public MainViewModel(
+        IHardwareController hardware,
+        IScenarioRepository repository,
+        MonitoringViewModel monitoring)
     {
         _hardware = hardware;
         _repository = repository;
+        Monitoring = monitoring;
 
         EcInfoText = string.IsNullOrEmpty(hardware.EcFirmwareInfo)
             ? "EC: không xác định"

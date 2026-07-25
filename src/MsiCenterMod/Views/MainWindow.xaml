@@ -4,6 +4,7 @@
         xmlns:conv="clr-namespace:MsiCenterMod.Converters"
         xmlns:models="clr-namespace:MsiCenterMod.Models"
         xmlns:vm="clr-namespace:MsiCenterMod.ViewModels"
+        xmlns:views="clr-namespace:MsiCenterMod.Views"
         Title="MSI Center Mod"
         Width="1180" Height="760"
         MinWidth="1000" MinHeight="660"
@@ -26,7 +27,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <TabControl Grid.Row="0"
+                    Style="{StaticResource Tab.Main}"
+                    SelectedIndex="{Binding SelectedTabIndex}">
+            <TabItem Header="🎛️  User Scenario">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="290" />
                 <ColumnDefinition Width="*" />
@@ -334,6 +339,12 @@
                 </StackPanel>
             </ScrollViewer>
         </Grid>
+            </TabItem>
+
+            <TabItem Header="📊  Hardware Monitoring">
+                <views:MonitoringView />
+            </TabItem>
+        </TabControl>
 
         <!-- ================= STATUS BAR ================= -->
         <Border Grid.Row="1" Background="{StaticResource Brush.Sidebar}"

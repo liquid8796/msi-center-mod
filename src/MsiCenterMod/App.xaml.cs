@@ -40,8 +40,13 @@ public partial class App
             return;
         }
 
-        // 2) Một bản duy nhất.
-        _singleInstanceMutex = new Mutex(true, SingleInstanceMutexName, out bool isFirstInstance);
+        // 2) Một bản duy nhất (bỏ qua ở chế độ dev --no-elevate để chạy song song bản test chỉ xem).
+        bool isFirstInstance = true;
+        if (!skipElevation)
+        {
+            _singleInstanceMutex = new Mutex(true, SingleInstanceMutexName, out isFirstInstance);
+        }
+
         if (!isFirstInstance)
         {
             System.Windows.MessageBox.Show(
@@ -56,6 +61,10 @@ public partial class App
 
         // 4) Cửa sổ chính + tray icon.
         _mainWindow = _services.GetRequiredService<MainWindow>();
+        if (e.Args.Contains("--tab-monitoring", StringComparer.OrdinalIgnoreCase))
+        {
+            _services.GetRequiredService<MainViewModel>().SelectedTabIndex = 1;
+        }
         _trayIcon = new TrayIconService(
             _services.GetRequiredService<MainViewModel>(),
             () => _mainWindow,
@@ -73,6 +82,7 @@ public partial class App
         services.AddSingleton<IMsiWmiClient, MsiWmiClient>();
         services.AddSingleton<IPowerOverlayService, PowerOverlayService>();
         services.AddSingleton<IScenarioRepository, JsonScenarioRepository>();
+        services.AddSingleton<ISystemMetricsService, SystemMetricsService>();
 
         // Các aspect của scenario — thêm tính năng mới chỉ cần đăng ký thêm ở đây.
         services.AddSingleton<IScenarioAspect, PerformanceAspect>();
@@ -81,6 +91,7 @@ public partial class App
         services.AddSingleton<IHardwareController, HardwareController>();
 
         // UI
+        services.AddSingleton<MonitoringViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
 

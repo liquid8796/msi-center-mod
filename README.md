@@ -4,6 +4,10 @@ Trình quản lý **User Scenario không giới hạn** cho laptop MSI — thay 
 
 Tạo bao nhiêu scenario tùy thích (Gaming tối đa, Làm việc yên tĩnh, Pin tối đa, …), mỗi scenario gồm **mức hiệu năng + chế độ quạt (kèm đường cong 6 điểm) + Windows power mode**, áp bằng 1 click hoặc từ menu khay hệ thống.
 
+Gồm 2 tab:
+- **User Scenario** — quản lý và áp scenario.
+- **Hardware Monitoring** — layout giống MSI Center gốc: donut CPU/GPU usage, Disk/Memory, bảng GPU (tên/clock/VRAM/nhiệt qua nvidia-smi), CPU, RAM, SSD, RPM 2 quạt (EC), LAN. Chỉ poll khi tab đang mở để không giữ dGPU thức gây tốn pin.
+
 > Phát triển và kiểm chứng trên **MSI GP76 Leopard 11UG** (EC `17K3EMS1`), MSI Center 2.0.71, Windows 11.
 > Về nguyên tắc chạy được trên mọi laptop MSI có WMI `MSI_ACPI` phiên bản ≥ 2 (đời ~2020 trở lên).
 
