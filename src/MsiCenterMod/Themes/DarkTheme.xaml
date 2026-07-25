@@ -1,0 +1,281 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ========= Bảng màu (phong cách MSI Center: nền tối, accent đỏ → tím) ========= -->
+    <Color x:Key="Color.Background">#0F1115</Color>
+    <Color x:Key="Color.Sidebar">#12151B</Color>
+    <Color x:Key="Color.Card">#171A21</Color>
+    <Color x:Key="Color.CardHover">#1E2230</Color>
+    <Color x:Key="Color.Border">#262B36</Color>
+    <Color x:Key="Color.Text">#F2F4F8</Color>
+    <Color x:Key="Color.TextDim">#9AA3B2</Color>
+    <Color x:Key="Color.AccentRed">#E4002B</Color>
+    <Color x:Key="Color.AccentPurple">#7B2FF7</Color>
+    <Color x:Key="Color.Success">#34D399</Color>
+    <Color x:Key="Color.Warning">#FBBF24</Color>
+
+    <SolidColorBrush x:Key="Brush.Background" Color="{StaticResource Color.Background}" />
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="{StaticResource Color.Sidebar}" />
+    <SolidColorBrush x:Key="Brush.Card" Color="{StaticResource Color.Card}" />
+    <SolidColorBrush x:Key="Brush.CardHover" Color="{StaticResource Color.CardHover}" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.Text" Color="{StaticResource Color.Text}" />
+    <SolidColorBrush x:Key="Brush.TextDim" Color="{StaticResource Color.TextDim}" />
+    <SolidColorBrush x:Key="Brush.AccentRed" Color="{StaticResource Color.AccentRed}" />
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="{StaticResource Color.Warning}" />
+
+    <LinearGradientBrush x:Key="Brush.Accent" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{StaticResource Color.AccentRed}" />
+        <GradientStop Offset="1" Color="{StaticResource Color.AccentPurple}" />
+    </LinearGradientBrush>
+
+    <!-- ========= Kiểu chữ ========= -->
+    <Style x:Key="Text.SectionHeader" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="0,22,0,10" />
+    </Style>
+
+    <!-- ========= Nút chính (gradient) ========= -->
+    <Style x:Key="Button.Accent" TargetType="Button">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Padding" Value="26,10" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            Background="{StaticResource Brush.Accent}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.88" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.75" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.Border}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= Nút phụ (viền) ========= -->
+    <Style x:Key="Button.Ghost" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= Card chọn chế độ (RadioButton) ========= -->
+    <Style x:Key="Radio.Card" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextDim}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Root"
+                            Background="{StaticResource Brush.Card}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= Danh sách scenario ========= -->
+    <Style x:Key="List.Scenarios" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0,0,0,8" />
+                    <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="Root"
+                                        Background="{StaticResource Brush.Card}"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Padding="12,10">
+                                    <ContentPresenter />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                                        <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.CardHover}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= Slider quạt (dọc) ========= -->
+    <Style x:Key="Slider.FanThumb" TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Ellipse Width="16" Height="16"
+                             Fill="White"
+                             Stroke="{StaticResource Brush.AccentRed}"
+                             StrokeThickness="2" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Slider.FanTrackFill" TargetType="RepeatButton">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Width="6" HorizontalAlignment="Center"
+                            Background="{StaticResource Brush.Accent}"
+                            CornerRadius="3" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Slider.FanTrackEmpty" TargetType="RepeatButton">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Width="6" HorizontalAlignment="Center"
+                            Background="{StaticResource Brush.Border}"
+                            CornerRadius="3" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Slider.Fan" TargetType="Slider">
+        <Setter Property="Orientation" Value="Vertical" />
+        <Setter Property="Minimum" Value="0" />
+        <Setter Property="Maximum" Value="150" />
+        <Setter Property="SmallChange" Value="1" />
+        <Setter Property="LargeChange" Value="5" />
+        <Setter Property="IsSnapToTickEnabled" Value="True" />
+        <Setter Property="TickFrequency" Value="1" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Track x:Name="PART_Track">
+                        <Track.DecreaseRepeatButton>
+                            <RepeatButton Command="Slider.DecreaseLarge"
+                                          Style="{StaticResource Slider.FanTrackFill}" />
+                        </Track.DecreaseRepeatButton>
+                        <Track.IncreaseRepeatButton>
+                            <RepeatButton Command="Slider.IncreaseLarge"
+                                          Style="{StaticResource Slider.FanTrackEmpty}" />
+                        </Track.IncreaseRepeatButton>
+                        <Track.Thumb>
+                            <Thumb Style="{StaticResource Slider.FanThumb}" />
+                        </Track.Thumb>
+                    </Track>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= TextBox ========= -->
+    <Style x:Key="TextBox.Dark" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Card}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CaretBrush" Value="{StaticResource Brush.Text}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource Brush.AccentRed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========= ComboBox tối giản ========= -->
+    <Style x:Key="Combo.Dark" TargetType="ComboBox">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Card}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+</ResourceDictionary>
