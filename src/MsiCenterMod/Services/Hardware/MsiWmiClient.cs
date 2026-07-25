@@ -1,15 +1,19 @@
 using System.Management;
 using System.Text;
 using MsiCenterMod.Services.Abstractions;
+using MsiCenterMod.Services.System;
 
 namespace MsiCenterMod.Services.Hardware;
 
 /// <summary>
 /// Hiện thực <see cref="IMsiWmiClient"/> theo đúng giao thức của MSIWMIACPI2.dll:
 ///  - ManagementObject: root\WMI, MSI_ACPI.InstanceName='ACPI\PNP0C14\0_0'.
-///  - Tham số vào/ra là object nhúng "Data" có thuộc tính "Bytes" (byte[32]).
-///  - Byte 0 của gói trả về là cờ thành công; dữ liệu thật bắt đầu từ byte 1.
-/// Mọi lời gọi được khóa (lock) vì WMI instance không thread-safe.
+///  - QUAN TRỌNG: bộ tham số vào được clone từ GetMethodParameters("Set_Data")
+///    và dùng chung cho MỌI method (kỹ thuật của chính MSI Center) — mỗi method
+///    tự khai báo kích thước buffer khác nhau nên không thể lấy theo từng method.
+///  - Gói 32 byte: byte[0] = sub-index/địa chỉ; gói trả về: byte[0] = cờ thành công.
+/// Mọi lời gọi được khóa (lock) vì WMI instance không thread-safe, và mọi exception
+/// đều được bắt tại đây — tầng trên chỉ nhận true/false.
 /// </summary>
 public sealed class MsiWmiClient : IMsiWmiClient
 {
@@ -19,6 +23,7 @@ public sealed class MsiWmiClient : IMsiWmiClient
 
     private readonly Lock _sync = new();
     private ManagementObject? _instance;
+    private ManagementBaseObject? _inParamsTemplate;
 
     public bool IsAvailable { get; private set; }
 
@@ -35,15 +40,17 @@ public sealed class MsiWmiClient : IMsiWmiClient
                 _instance = new ManagementObject(Scope, Path, null);
                 _instance.Get(); // ép bind ngay để lỗi quyền/không tồn tại lộ ra tại đây
 
+                CreateInParamsTemplate();
+
                 // Get_WMI (không tham số): raw[1] = major, raw[2] = minor
-                byte[]? wmiInfo = InvokeRaw(MsiEcRegisters.GetWmi, null);
+                byte[]? wmiInfo = InvokeRawUnsafe(MsiEcRegisters.GetWmi, null);
                 if (wmiInfo is { Length: > 2 })
                 {
                     WmiMajorVersion = wmiInfo[1];
                 }
 
                 // Get_EC (không tham số): raw[2..29] = chuỗi phiên bản firmware EC
-                byte[]? ecInfo = InvokeRaw(MsiEcRegisters.GetEc, null);
+                byte[]? ecInfo = InvokeRawUnsafe(MsiEcRegisters.GetEc, null);
                 if (ecInfo is { Length: >= 30 })
                 {
                     EcFirmwareInfo = Encoding.UTF8
@@ -60,6 +67,7 @@ public sealed class MsiWmiClient : IMsiWmiClient
 
                 IsAvailable = true;
                 error = string.Empty;
+                AppLogger.Info($"WMI sẵn sàng: version={WmiMajorVersion}, EC={EcFirmwareInfo}");
                 return true;
             }
             catch (Exception ex)
@@ -68,8 +76,31 @@ public sealed class MsiWmiClient : IMsiWmiClient
                 error = ex is ManagementException me
                     ? $"Không truy cập được MSI_ACPI WMI ({me.ErrorCode}). Hãy chạy bằng quyền Administrator trên máy MSI."
                     : ex.Message;
+                AppLogger.Error("Initialize WMI thất bại", ex);
                 return false;
             }
+        }
+    }
+
+    /// <summary>
+    /// Tạo template tham số vào — giống hệt CreateParamsInstance của MSI Center:
+    /// ưu tiên GetMethodParameters("Set_Data"), fallback sang kết quả Get_WMI.
+    /// </summary>
+    private void CreateInParamsTemplate()
+    {
+        try
+        {
+            _inParamsTemplate = _instance!.GetMethodParameters(MsiEcRegisters.SetData);
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error("GetMethodParameters(Set_Data) thất bại, fallback Get_WMI", ex);
+            _inParamsTemplate = _instance!.InvokeMethod(MsiEcRegisters.GetWmi, null, null);
+        }
+
+        if (_inParamsTemplate?["Data"] is not ManagementBaseObject)
+        {
+            throw new InvalidOperationException("Không tạo được bộ tham số WMI (thiếu thuộc tính Data).");
         }
     }
 
@@ -81,7 +112,16 @@ public sealed class MsiWmiClient : IMsiWmiClient
         byte[]? raw;
         lock (_sync)
         {
-            raw = InvokeRaw(method, package);
+            try
+            {
+                raw = InvokeRawUnsafe(method, package);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error($"TryRead {method}({subIndex}) thất bại", ex);
+                data = [];
+                return false;
+            }
         }
 
         if (raw is null || raw.Length == 0 || raw[0] == 0)
@@ -111,14 +151,31 @@ public sealed class MsiWmiClient : IMsiWmiClient
         byte[]? raw;
         lock (_sync)
         {
-            raw = InvokeRaw(method, package);
+            try
+            {
+                raw = InvokeRawUnsafe(method, package);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error($"TryWrite {method}(0x{subIndex:X2}) thất bại", ex);
+                return false;
+            }
         }
 
-        return raw is { Length: > 0 } && raw[0] > 0;
+        bool ok = raw is { Length: > 0 } && raw[0] > 0;
+        if (!ok)
+        {
+            AppLogger.Error($"TryWrite {method}(0x{subIndex:X2}) bị EC từ chối (flag=0).");
+        }
+
+        return ok;
     }
 
-    /// <summary>Gọi method WMI thô; <paramref name="package"/> = null cho method không tham số.</summary>
-    private byte[]? InvokeRaw(string method, byte[]? package)
+    /// <summary>
+    /// Gọi method WMI thô; <paramref name="package"/> = null cho method không tham số.
+    /// Phải gọi trong lock. Có thể ném ManagementException — caller tự bắt.
+    /// </summary>
+    private byte[]? InvokeRawUnsafe(string method, byte[]? package)
     {
         if (_instance is null)
         {
@@ -132,7 +189,8 @@ public sealed class MsiWmiClient : IMsiWmiClient
         }
         else
         {
-            using ManagementBaseObject inParams = _instance.GetMethodParameters(method);
+            // Clone template Set_Data cho mọi method — kỹ thuật của MSI Center.
+            var inParams = (ManagementBaseObject)_inParamsTemplate!.Clone();
             var dataObject = (ManagementBaseObject)inParams["Data"];
             dataObject.SetPropertyValue("Bytes", package);
             inParams.SetPropertyValue("Data", dataObject);
@@ -154,6 +212,8 @@ public sealed class MsiWmiClient : IMsiWmiClient
     {
         lock (_sync)
         {
+            _inParamsTemplate?.Dispose();
+            _inParamsTemplate = null;
             _instance?.Dispose();
             _instance = null;
         }

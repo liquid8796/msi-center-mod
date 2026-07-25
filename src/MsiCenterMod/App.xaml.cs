@@ -26,6 +26,8 @@ public partial class App
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        RegisterGlobalExceptionHandlers();
+        AppLogger.Info($"Khởi động, args: [{string.Join(" ", e.Args)}]");
 
         var elevation = new ElevationService();
 
@@ -83,6 +85,31 @@ public partial class App
         services.AddSingleton<MainWindow>();
 
         return services.BuildServiceProvider();
+    }
+
+    /// <summary>
+    /// Lưới an toàn cuối cùng: mọi exception chưa bắt đều được ghi log.
+    /// Exception trên UI thread được xử lý (app sống tiếp) thay vì chết lặng lẽ.
+    /// </summary>
+    private void RegisterGlobalExceptionHandlers()
+    {
+        DispatcherUnhandledException += (_, args) =>
+        {
+            AppLogger.Error("Exception chưa bắt trên UI thread", args.Exception);
+            System.Windows.MessageBox.Show(
+                $"Có lỗi không mong muốn (đã ghi vào log):\n{args.Exception.Message}\n\nLog: {AppLogger.LogPath}",
+                "MSI Center Mod", MessageBoxButton.OK, MessageBoxImage.Warning);
+            args.Handled = true; // không cho app chết
+        };
+
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            AppLogger.Error("Exception chưa bắt trong background task", args.Exception);
+            args.SetObserved();
+        };
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            AppLogger.Error("Exception nghiêm trọng (app sẽ thoát)", args.ExceptionObject as Exception);
     }
 
     private void ExitApplication()

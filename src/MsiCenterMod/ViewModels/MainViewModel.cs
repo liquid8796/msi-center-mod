@@ -217,28 +217,44 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        HardwareStatus? status = await _hardware.ReadStatusAsync();
-        if (status is not null)
+        try
         {
-            Status.Update(status);
+            HardwareStatus? status = await _hardware.ReadStatusAsync();
+            if (status is not null)
+            {
+                Status.Update(status);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Timer tick là async void phía trên — tuyệt đối không để exception lọt ra.
+            Services.System.AppLogger.Error("Đọc trạng thái phần cứng thất bại", ex);
         }
     }
 
     /// <summary>Đọc ngưỡng nhiệt thật từ EC để gắn nhãn cho các slider quạt.</summary>
     private async Task InitializeFromHardwareAsync()
     {
-        await RefreshStatusAsync();
-
-        FanCurve? cpu = await _hardware.ReadFanCurveAsync(FanTarget.Cpu);
-        FanCurve? gpu = await _hardware.ReadFanCurveAsync(FanTarget.Gpu);
-        if (cpu is null || gpu is null)
+        try
         {
-            return;
+            await RefreshStatusAsync();
+
+            FanCurve? cpu = await _hardware.ReadFanCurveAsync(FanTarget.Cpu);
+            FanCurve? gpu = await _hardware.ReadFanCurveAsync(FanTarget.Gpu);
+            if (cpu is null || gpu is null)
+            {
+                return;
+            }
+
+            foreach (ScenarioViewModel scenario in Scenarios)
+            {
+                scenario.UpdateTemperatureLabels(cpu.Temperatures, gpu.Temperatures);
+            }
         }
-
-        foreach (ScenarioViewModel scenario in Scenarios)
+        catch (Exception ex)
         {
-            scenario.UpdateTemperatureLabels(cpu.Temperatures, gpu.Temperatures);
+            // Chạy fire-and-forget lúc khởi động — lỗi chỉ ghi log, không phá app.
+            Services.System.AppLogger.Error("Khởi tạo dữ liệu từ EC thất bại", ex);
         }
     }
 
