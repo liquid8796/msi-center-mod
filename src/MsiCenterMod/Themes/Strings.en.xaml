@@ -2,6 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
+    <!-- Splash screen -->
+    <sys:String x:Key="S.Splash.Init">Starting up…</sys:String>
+    <sys:String x:Key="S.Splash.Wmi">Connecting to hardware (WMI)…</sys:String>
+    <sys:String x:Key="S.Splash.Sensors">Reading system sensors…</sys:String>
+    <sys:String x:Key="S.Splash.Settings">Loading settings…</sys:String>
+    <sys:String x:Key="S.Splash.Ui">Building the interface…</sys:String>
+    <sys:String x:Key="S.Splash.Ready">Ready</sys:String>
+    <sys:String x:Key="S.Splash.Failed">Startup failed:&#10;{0}&#10;&#10;Log: {1}</sys:String>
+
     <!-- Sidebar -->
     <sys:String x:Key="S.Tagline">Unlimited User Scenarios</sys:String>
     <sys:String x:Key="S.Sidebar.Add">＋  Add new scenario</sys:String>

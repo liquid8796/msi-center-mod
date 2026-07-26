@@ -16,10 +16,35 @@ public sealed class StartupTaskService : IStartupService
 {
     private const string TaskName = "MSI Center Mod";
 
+    private readonly Lock _sync = new();
+    private bool? _cachedEnabled;
+
+    /// <summary>
+    /// Trạng thái được cache: mỗi lần hỏi lại đều phải spawn schtasks.exe (~200ms),
+    /// quá đắt để gọi trên UI thread. Cache được nạp lúc khởi động và cập nhật
+    /// mỗi khi chính app bật/tắt autostart.
+    /// </summary>
     public bool IsEnabled()
-        => RunSchtasks($"/Query /TN \"{TaskName}\"", out _) == 0;
+    {
+        lock (_sync)
+        {
+            return _cachedEnabled ??= RunSchtasks($"/Query /TN \"{TaskName}\"", out _) == 0;
+        }
+    }
 
     public bool TrySetEnabled(bool enabled, out string error)
+    {
+        bool result = TrySetEnabledCore(enabled, out error);
+        lock (_sync)
+        {
+            // Thành công → biết chắc trạng thái mới; thất bại → buộc đọc lại lần sau.
+            _cachedEnabled = result ? enabled : null;
+        }
+
+        return result;
+    }
+
+    private bool TrySetEnabledCore(bool enabled, out string error)
     {
         try
         {

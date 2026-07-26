@@ -21,6 +21,7 @@ Create as many scenarios as you like (Max Gaming, Quiet Work, Battery Saver, …
 - **Start with Windows** — Task Scheduler task with highest run level (no UAC prompt at logon), starts hidden in the tray
 - **Auto-reapply last scenario** — on app start, after sleep/resume, and on AC ↔ battery switch (the EC resets to defaults on every boot; this keeps your scenario sticky without MSI Center)
 - **Bilingual UI** — Vietnamese / English, switchable at runtime with no restart (WPF DynamicResource dictionaries)
+- **Startup splash with real progress** — hardware/sensor initialization runs off the UI thread and reports each stage (WMI → sensors → settings → interface); silent `--autostart` launches skip it
 - Tray icon: apply any scenario from the context menu (the last-applied one is check-marked); closing the window minimizes to tray
 
 ## How it works

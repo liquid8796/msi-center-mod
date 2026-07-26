@@ -2,6 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
+    <!-- Màn hình khởi động -->
+    <sys:String x:Key="S.Splash.Init">Đang khởi tạo…</sys:String>
+    <sys:String x:Key="S.Splash.Wmi">Kết nối phần cứng (WMI)…</sys:String>
+    <sys:String x:Key="S.Splash.Sensors">Đọc cảm biến hệ thống…</sys:String>
+    <sys:String x:Key="S.Splash.Settings">Đọc cấu hình…</sys:String>
+    <sys:String x:Key="S.Splash.Ui">Dựng giao diện…</sys:String>
+    <sys:String x:Key="S.Splash.Ready">Sẵn sàng</sys:String>
+    <sys:String x:Key="S.Splash.Failed">Khởi động thất bại:&#10;{0}&#10;&#10;Log: {1}</sys:String>
+
     <!-- Sidebar -->
     <sys:String x:Key="S.Tagline">User Scenario không giới hạn</sys:String>
     <sys:String x:Key="S.Sidebar.Add">＋  Thêm scenario mới</sys:String>
